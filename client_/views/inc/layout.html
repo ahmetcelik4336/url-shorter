@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from pixner.net/cortaly/main/sign-in.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 01 May 2026 15:10:45 GMT -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Cortaly - URL Shortner HTML Template</title>
+
+    <link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/all.min.css">
+    <link rel="stylesheet" href="/static/assets/css/animate.css">
+    <link rel="stylesheet" href="/static/assets/css/nice-select.css">
+    <link rel="stylesheet" href="/static/assets/css/owl.min.css">
+    <link rel="stylesheet" href="/static/assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="/static/assets/css/flaticon.css">
+    <link rel="stylesheet" href="/static/assets/css/main.css">
+
+    <link rel="shortcut icon" href="/static/assets/images/favicon.png" type="image/x-icon">
+
+
+</head>
+
+<body>
+
+    <!--============= ScrollToTop Section Starts Here =============-->
+    <div class="overlayer" id="overlayer">
+        <div class="loader">
+            <div class="loader-inner"></div>
+        </div>
+    </div>
+    <a href="#0" class="scrollToTop"><i class="fas fa-angle-up"></i></a>
+    <div class="overlay"></div>
+    {{if eq .IsShowHeader "show"}}
+    <header class="header-section">
+        <div class="container">
+            <div class="header-wrapper">
+                <div class="logo">
+                    <a href="index-2.html">
+                        <img src="static/assets/images/logo/logo.png" alt="logo">
+                    </a>
+                </div>
+                <ul class="menu">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    <li>
+                        <a href="payout-rates.html">Payout Rates</a>
+                    </li>
+                    <li>
+                        <a href="faq.html">Faq</a>
+                    </li>
+                    <li>
+                        <a href="#0">Blog</a>
+                        <ul class="submenu">
+                            <li>
+                                <a href="blog.html">Blog</a>
+                            </li>
+                            <li>
+                                <a href="blog-single.html">Blog Single</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="d-sm-none text-center">
+                        <a href="/auth/login" class="header-button active">Login</a>
+                    </li>
+                    <li class="d-sm-none text-center">
+                        <a href="/auth/register" class="mb-4 header-button">Register</a>
+                    </li>
+                </ul>
+                <div class="header-bar d-lg-none mr-sm-3">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="header-right">
+                    <a href="/auth/login" class="header-button d-none d-sm-inline-block m-0 active">Login</a>
+                    <a href="/auth/register" class="header-button d-none d-sm-inline-block m-0">Register</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    {{end}}
+    {{.LayoutContent}}
+    {{if eq .IsShowFooter "show"}}
+    <!--============= Footer Section Starts Here =============-->
+    <footer class="footer-section padding-top">
+        <div class="footer-bg bg_img" data-background="static/assets/images/footer/footer-bg.jpg"></div>
+        <div class="footer-bg d-md-block d-none"><img src="static/assets/images/footer/wave.png" alt="footer"></div>
+        <div class="container">
+            <div class="section-header cl-white-499">
+                <h5 class="cate">Contact Us</h5>
+                <h2 class="title">Get in touch!</h2>
+                <p>We thrive to ensure that you get the most out of your experience</p>
+            </div>
+            <form class="contact-form" id="contact_form_submit">
+                <div class="form-group">
+                    <label for="name">Your Full Name</label>
+                    <input type="text" name="name" id="name" placeholder="Enter Your Full Name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Your Email</label>
+                    <input type="text" name="email" id="email" placeholder="Enter Your Email">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea name="message" id="message" placeholder="Enter Your Message"></textarea>
+                </div>
+                <div class="form-group check-group">
+                    <input type="checkbox" id="check" required>
+                    <label for="check">I agree to receive emails, newsletters and promotional messages</label>
+                </div>
+                <div class="form-group text-center">
+                    <button type="submit">Send Message</button>
+                </div>
+            </form>
+            <div class="footer-top">
+                <div class="logo">
+                    <a href="index-2.html">
+                        <img src="static/assets/images/logo/footer-logo.png" alt="logo">
+                    </a>
+                </div>
+                <ul class="links">
+                    <li>
+                        <a href="#0"><img src="static/assets/images/footer/neteller.png" alt="footer"></a>
+                    </li>
+                    <li>
+                        <a href="#0"><img src="static/assets/images/footer/skrill.png" alt="footer"></a>
+                    </li>
+                    <li>
+                        <a href="#0"><img src="static/assets/images/footer/paypal.png" alt="footer"></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-bottom-area">
+                    <div class="left cl-white">
+                        <p>&copy; Copyright 2020 | <a href="#0">Cortaly</a> By UIAXIS</p>
+                    </div>
+                    <ul class="social-icons">
+                        <li>
+                            <a href="#0" class="active">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#0" class="">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#0" class="">
+                                <i class="fab fa-pinterest-p"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#0" class="">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!--============= Footer Section Ends Here =============-->
+    {{end}}
+
+    <script src="/static/assets/js/jquery-3.3.1.min.js"></script>
+    <script src="/static/assets/js/modernizr-3.6.0.min.js"></script>
+    <script src="/static/assets/js/plugins.js"></script>
+    <script src="/static/assets/js/bootstrap.min.js"></script>
+    <script src="/static/assets/js/wow.min.js"></script>
+    <script src="/static/assets/js/waypoints.js"></script>
+    <script src="/static/assets/js/nice-select.js"></script>
+    <script src="/static/assets/js/counterup.min.js"></script>
+    <script src="/static/assets/js/owl.min.js"></script>
+    <script src="/static/assets/js/magnific-popup.min.js"></script>
+    <script src="/static/assets/js/paroller.js"></script>
+    <script src="/static/assets/js/main.js"></script>
+
+
+    <script defer
+        src="https:///static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516"
+        integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg=="
+        data-cf-beacon='{"version":"2024.11.0","token":"6e6444122ed94892b6dff27396bb5627","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
+        crossorigin="anonymous"></script>
+</body>
+
+
+<!-- Mirrored from pixner.net/cortaly/main/sign-in.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 01 May 2026 15:10:46 GMT -->
+
+</html>

@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Backend (Beego)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/2/main.go",
+            "preLaunchTask": "run-bee-backend"
+        },
+        {
+            "name": "Frontend (Client)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/client_/main.go",
+            "preLaunchTask": "run-bee-client"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full Stack Başlat",
+            "configurations": ["Backend (Beego)", "Frontend (Client)"],
+            "stopAll": true
+        }
+    ]
+}

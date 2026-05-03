@@ -1,0 +1,247 @@
+basePath: /v1/
+definitions:
+  dto.CreateUrlRequest:
+    properties:
+      alias:
+        type: string
+      expiration_date:
+        type: string
+      long_url:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.GeneralResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/dto.UrlResponse'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.UpdateUrlRequest:
+    properties:
+      id:
+        type: integer
+      long_url:
+        type: string
+    type: object
+  dto.UrlResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      long_url:
+        type: string
+      short_code:
+        type: string
+    type: object
+  dto.UserResponse:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Bu bir URL kısaltma servisidir.
+  title: Url Shortener API
+  version: "1.0"
+paths:
+  /panel/bulk-create:
+    post:
+      description: Birden fazla uzun URL'yi aynı anda kısaltmak için kullanılır
+      parameters:
+      - description: Oluşturulacak URL listesi
+        in: body
+        name: body
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/dto.CreateUrlRequest'
+          type: array
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.GeneralResponse'
+        "400":
+          description: Geçersiz JSON formatı
+          schema:
+            type: string
+        "500":
+          description: Urller oluşturulurken hata oluştu
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+  /panel/create:
+    post:
+      description: Yeni bir kısa URL oluşturur.
+      parameters:
+      - description: Uzun URL ve opsiyonel bilgiler
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUrlRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UrlResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: invalid
+        "500":
+          description: Internal Server Error
+          schema:
+            type: server
+      security:
+      - ApiKeyAuth: []
+  /panel/history:
+    get:
+      description: Giriş yapmış kullanıcının URL oluşturma geçmişini listeler.
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.UrlResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: server
+      security:
+      - ApiKeyAuth: []
+  /panel/update:
+    put:
+      description: Url bilgilerini güncelle
+      parameters:
+      - description: Uzun URL ve opsiyonel bilgiler
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUrlRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UrlResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: server
+      security:
+      - ApiKeyAuth: []
+  /url/:shortcode:
+    get:
+      description: Yeni bir kısa URL oluşturur.
+      responses:
+        "302":
+          description: Hedef URL'ye yönlendirilir
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: invalid
+        "409":
+          description: Conflict
+          schema:
+            type: "409"
+        "500":
+          description: Internal Server Error
+          schema:
+            type: server
+  /user/login:
+    post:
+      description: Kullanıcı giriş yapar ve JWT token döner
+      parameters:
+      - description: Login bilgileri
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+  /user/profile:
+    get:
+      description: Giriş yapan kullanıcının profil bilgisi
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+  /user/register:
+    post:
+      description: Yeni kullanıcı kaydı oluşturur
+      parameters:
+      - description: Register bilgileri
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      responses:
+        "200":
+          description: başarılı kayıt
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "401":
+          description: error
+          schema:
+            type: string
+        "409":
+          description: email exists
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+swagger: "2.0"
