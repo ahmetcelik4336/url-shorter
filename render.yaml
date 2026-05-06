@@ -1,25 +1,21 @@
 services:
   - type: web
     name: api-service
-    env: host        # 'go' yerine 'host' yapıyoruz
+    env: host  # 'go' yerine 'host' kullanarak Render'ın kısıtlamalarını aşıyoruz
     plan: free
-    # Go yüklü mü diye kontrol edip derleme yapıyoruz
-    buildCommand: go build -o api-app ./api
+    # Ana dizindeki go.work'ü kullanarak api klasörünü derler
+    buildCommand: go build -o api-app ./2
     startCommand: ./api-app
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: urlshorter
           property: connectionString
-      - key: GO_VERSION
-        value: 1.22.0
 
   - type: web
     name: site-service
-    env: host        # 'go' yerine 'host' yapıyoruz
+    env: host
     plan: free
-    buildCommand: go build -o site-app ./client
+    # Ana dizindeki go.work'ü kullanarak client klasörünü derler
+    buildCommand: go build -o site-app ./client_
     startCommand: ./site-app
-    envVars:
-      - key: GO_VERSION
-        value: 1.22.0
