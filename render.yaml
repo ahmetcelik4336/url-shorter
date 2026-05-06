@@ -3,8 +3,8 @@ services:
     name: api-service
     env: go
     plan: free
-    # Ana dizinden api klasörüne gidip derleme yapar
-    buildCommand: go build -o api-app ./2/main.go
+    # Ana dizinden komutu veriyoruz, Go otomatik go.work'ü kullanır
+    buildCommand: go build -o api-app ./api
     startCommand: ./api-app
     envVars:
       - key: DATABASE_URL
@@ -16,6 +16,5 @@ services:
     name: site-service
     env: go
     plan: free
-    # Ana dizinden client klasörüne gidip derleme yapar
-    buildCommand: go build -o site-app ./client_/main.go
+    buildCommand: go build -o site-app ./client
     startCommand: ./site-app
