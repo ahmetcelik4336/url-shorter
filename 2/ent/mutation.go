@@ -42,6 +42,7 @@ type LogsMutation struct {
 	device        *string
 	ip            *string
 	referer       *string
+	created_at    *time.Time
 	clearedFields map[string]struct{}
 	log           *int
 	clearedlog    bool
@@ -256,6 +257,42 @@ func (m *LogsMutation) ResetReferer() {
 	m.referer = nil
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (m *LogsMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *LogsMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Logs entity.
+// If the Logs object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LogsMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *LogsMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
 // SetLogID sets the "log" edge to the Url entity by id.
 func (m *LogsMutation) SetLogID(id int) {
 	m.log = &id
@@ -329,7 +366,7 @@ func (m *LogsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LogsMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.device != nil {
 		fields = append(fields, logs.FieldDevice)
 	}
@@ -338,6 +375,9 @@ func (m *LogsMutation) Fields() []string {
 	}
 	if m.referer != nil {
 		fields = append(fields, logs.FieldReferer)
+	}
+	if m.created_at != nil {
+		fields = append(fields, logs.FieldCreatedAt)
 	}
 	return fields
 }
@@ -353,6 +393,8 @@ func (m *LogsMutation) Field(name string) (ent.Value, bool) {
 		return m.IP()
 	case logs.FieldReferer:
 		return m.Referer()
+	case logs.FieldCreatedAt:
+		return m.CreatedAt()
 	}
 	return nil, false
 }
@@ -368,6 +410,8 @@ func (m *LogsMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIP(ctx)
 	case logs.FieldReferer:
 		return m.OldReferer(ctx)
+	case logs.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Logs field %s", name)
 }
@@ -397,6 +441,13 @@ func (m *LogsMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetReferer(v)
+		return nil
+	case logs.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Logs field %s", name)
@@ -455,6 +506,9 @@ func (m *LogsMutation) ResetField(name string) error {
 		return nil
 	case logs.FieldReferer:
 		m.ResetReferer()
+		return nil
+	case logs.FieldCreatedAt:
+		m.ResetCreatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Logs field %s", name)

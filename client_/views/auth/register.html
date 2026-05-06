@@ -16,7 +16,7 @@
             </div>
             <div class="account-body">
                 <span class="d-block mb-20">Sign up with your work email</span>
-                <form class="account-form" method="post" action="/auth/register">
+                <form class="account-form" method="post" action="{{baseurl .slug "auth/register"}}">
                     <div style="text-align: center;color: red;">
                         {{.Message}}
                        </div>

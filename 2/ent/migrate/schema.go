@@ -14,6 +14,7 @@ var (
 		{Name: "device", Type: field.TypeString},
 		{Name: "ip", Type: field.TypeString},
 		{Name: "referer", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
 		{Name: "url_log_url", Type: field.TypeInt},
 	}
 	// LogsTable holds the schema information for the "logs" table.
@@ -24,7 +25,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "logs_urls_log_url",
-				Columns:    []*schema.Column{LogsColumns[4]},
+				Columns:    []*schema.Column{LogsColumns[5]},
 				RefColumns: []*schema.Column{UrlsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -35,6 +36,12 @@ func (_c *LogsCreate) SetIP(v string) *LogsCreate {
 // SetReferer sets the "referer" field.
 func (_c *LogsCreate) SetReferer(v string) *LogsCreate {
 	_c.mutation.SetReferer(v)
+	return _c
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (_c *LogsCreate) SetCreatedAt(v time.Time) *LogsCreate {
+	_c.mutation.SetCreatedAt(v)
 	return _c
 }
 
@@ -92,6 +99,9 @@ func (_c *LogsCreate) check() error {
 	if _, ok := _c.mutation.Referer(); !ok {
 		return &ValidationError{Name: "referer", err: errors.New(`ent: missing required field "Logs.referer"`)}
 	}
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Logs.created_at"`)}
+	}
 	if len(_c.mutation.LogIDs()) == 0 {
 		return &ValidationError{Name: "log", err: errors.New(`ent: missing required edge "Logs.log"`)}
 	}
@@ -132,6 +142,10 @@ func (_c *LogsCreate) createSpec() (*Logs, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Referer(); ok {
 		_spec.SetField(logs.FieldReferer, field.TypeString, value)
 		_node.Referer = value
+	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(logs.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
 	}
 	if nodes := _c.mutation.LogIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

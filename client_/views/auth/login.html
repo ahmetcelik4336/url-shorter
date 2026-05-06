@@ -10,7 +10,7 @@
         <div class="account-wrapper">
             <div class="account-body">
                 <h4 class="title mb-20">Welcome To Cortaly</h4>
-                <form class="account-form" method="POST" action="/auth/login">
+                <form class="account-form" method="POST" action="{{baseurl .slug "auth/login"}}">
                    <div style="text-align: center;color: red;">
                     {{.Message}}
                    </div>

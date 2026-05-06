@@ -30,7 +30,7 @@ func (c *AuthController) Login() {
 		return
 	}
 
-	if resp := validator.CheckStruct(req); resp != nil {
+	if resp := validator.CheckStruct(req, "tr"); resp != nil {
 		c.Data["json"] = dto.GeneralResponse[any]{
 			Errors:  resp.Errors,
 			Status:  false,

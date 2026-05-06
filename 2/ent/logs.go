@@ -7,6 +7,7 @@ import (
 	"2/ent/url"
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -23,6 +24,8 @@ type Logs struct {
 	IP string `json:"ip,omitempty"`
 	// Referer holds the value of the "referer" field.
 	Referer string `json:"referer,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the LogsQuery when eager-loading is set.
 	Edges        LogsEdges `json:"edges"`
@@ -59,6 +62,8 @@ func (*Logs) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case logs.FieldDevice, logs.FieldIP, logs.FieldReferer:
 			values[i] = new(sql.NullString)
+		case logs.FieldCreatedAt:
+			values[i] = new(sql.NullTime)
 		case logs.ForeignKeys[0]: // url_log_url
 			values[i] = new(sql.NullInt64)
 		default:
@@ -99,6 +104,12 @@ func (_m *Logs) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field referer", values[i])
 			} else if value.Valid {
 				_m.Referer = value.String
+			}
+		case logs.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				_m.CreatedAt = value.Time
 			}
 		case logs.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -156,6 +167,9 @@ func (_m *Logs) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("referer=")
 	builder.WriteString(_m.Referer)
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -41,7 +41,12 @@ func (c *AuthController) LoginHandler() {
 		return
 	}
 
-	if resp := validator.CheckStruct(req); resp != nil {
+	langVal := c.Ctx.Input.GetData("lang")
+	lang, ok := langVal.(string)
+	if !ok || lang == "" {
+		lang = "en"
+	}
+	if resp := validator.CheckStruct(req, lang); resp != nil {
 		c.Data["IsShowHeader"] = ""
 		c.Data["IsShowFooter"] = ""
 		c.Data["Errors"] = resp.Errors
@@ -75,8 +80,13 @@ func (c *AuthController) RegisterHandler() {
 		c.CustomAbort(http.StatusBadRequest, "Form verisi işlenemedi")
 		return
 	}
+	langVal := c.Ctx.Input.GetData("lang")
+	lang, ok := langVal.(string)
+	if !ok || lang == "" {
+		lang = "en"
+	}
 
-	if resp := validator.CheckStruct(req); resp != nil {
+	if resp := validator.CheckStruct(req, lang); resp != nil {
 		c.Data["IsShowHeader"] = ""
 		c.Data["IsShowFooter"] = ""
 		c.Data["Errors"] = resp.Errors

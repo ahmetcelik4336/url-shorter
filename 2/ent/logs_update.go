@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -67,6 +68,20 @@ func (_u *LogsUpdate) SetReferer(v string) *LogsUpdate {
 func (_u *LogsUpdate) SetNillableReferer(v *string) *LogsUpdate {
 	if v != nil {
 		_u.SetReferer(*v)
+	}
+	return _u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (_u *LogsUpdate) SetCreatedAt(v time.Time) *LogsUpdate {
+	_u.mutation.SetCreatedAt(v)
+	return _u
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_u *LogsUpdate) SetNillableCreatedAt(v *time.Time) *LogsUpdate {
+	if v != nil {
+		_u.SetCreatedAt(*v)
 	}
 	return _u
 }
@@ -154,6 +169,9 @@ func (_u *LogsUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Referer(); ok {
 		_spec.SetField(logs.FieldReferer, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.CreatedAt(); ok {
+		_spec.SetField(logs.FieldCreatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.LogCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -244,6 +262,20 @@ func (_u *LogsUpdateOne) SetReferer(v string) *LogsUpdateOne {
 func (_u *LogsUpdateOne) SetNillableReferer(v *string) *LogsUpdateOne {
 	if v != nil {
 		_u.SetReferer(*v)
+	}
+	return _u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (_u *LogsUpdateOne) SetCreatedAt(v time.Time) *LogsUpdateOne {
+	_u.mutation.SetCreatedAt(v)
+	return _u
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_u *LogsUpdateOne) SetNillableCreatedAt(v *time.Time) *LogsUpdateOne {
+	if v != nil {
+		_u.SetCreatedAt(*v)
 	}
 	return _u
 }
@@ -361,6 +393,9 @@ func (_u *LogsUpdateOne) sqlSave(ctx context.Context) (_node *Logs, err error) {
 	}
 	if value, ok := _u.mutation.Referer(); ok {
 		_spec.SetField(logs.FieldReferer, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.CreatedAt(); ok {
+		_spec.SetField(logs.FieldCreatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.LogCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -4,6 +4,7 @@ package logs
 
 import (
 	"2/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -67,6 +68,11 @@ func IP(v string) predicate.Logs {
 // Referer applies equality check predicate on the "referer" field. It's identical to RefererEQ.
 func Referer(v string) predicate.Logs {
 	return predicate.Logs(sql.FieldEQ(FieldReferer, v))
+}
+
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.Logs {
+	return predicate.Logs(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // DeviceEQ applies the EQ predicate on the "device" field.
@@ -262,6 +268,46 @@ func RefererEqualFold(v string) predicate.Logs {
 // RefererContainsFold applies the ContainsFold predicate on the "referer" field.
 func RefererContainsFold(v string) predicate.Logs {
 	return predicate.Logs(sql.FieldContainsFold(FieldReferer, v))
+}
+
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.Logs {
+	return predicate.Logs(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.Logs {
+	return predicate.Logs(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.Logs {
+	return predicate.Logs(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.Logs {
+	return predicate.Logs(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.Logs {
+	return predicate.Logs(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.Logs {
+	return predicate.Logs(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.Logs {
+	return predicate.Logs(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.Logs {
+	return predicate.Logs(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // HasLog applies the HasEdge predicate on the "log" edge.

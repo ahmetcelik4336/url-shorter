@@ -40,8 +40,8 @@
         <div class="container">
             <div class="header-wrapper">
                 <div class="logo">
-                    <a href="index-2.html">
-                        <img src="static/assets/images/logo/logo.png" alt="logo">
+                    <a href="/">
+                        <img src="/static/assets/images/logo/logo.png" alt="logo">
                     </a>
                 </div>
                 <ul class="menu">
@@ -66,7 +66,7 @@
                         </ul>
                     </li>
                     <li class="d-sm-none text-center">
-                        <a href="/auth/login" class="header-button active">Login</a>
+                        <a href="{{baseurl .slug "auth/login"}}" class="header-button active">Login</a>
                     </li>
                     <li class="d-sm-none text-center">
                         <a href="/auth/register" class="mb-4 header-button">Register</a>
@@ -78,7 +78,7 @@
                     <span></span>
                 </div>
                 <div class="header-right">
-                    <a href="/auth/login" class="header-button d-none d-sm-inline-block m-0 active">Login</a>
+                    <a href="{{baseurl .slug "auth/login"}}" class="header-button d-none d-sm-inline-block m-0 active">Login</a>
                     <a href="/auth/register" class="header-button d-none d-sm-inline-block m-0">Register</a>
                 </div>
             </div>
@@ -89,8 +89,8 @@
     {{if eq .IsShowFooter "show"}}
     <!--============= Footer Section Starts Here =============-->
     <footer class="footer-section padding-top">
-        <div class="footer-bg bg_img" data-background="static/assets/images/footer/footer-bg.jpg"></div>
-        <div class="footer-bg d-md-block d-none"><img src="static/assets/images/footer/wave.png" alt="footer"></div>
+        <div class="footer-bg bg_img" data-background="/static/assets/images/footer/footer-bg.jpg"></div>
+        <div class="footer-bg d-md-block d-none"><img src="/static/assets/images/footer/wave.png" alt="footer"></div>
         <div class="container">
             <div class="section-header cl-white-499">
                 <h5 class="cate">Contact Us</h5>
@@ -121,18 +121,18 @@
             <div class="footer-top">
                 <div class="logo">
                     <a href="index-2.html">
-                        <img src="static/assets/images/logo/footer-logo.png" alt="logo">
+                        <img src="/static/assets/images/logo/footer-logo.png" alt="logo">
                     </a>
                 </div>
                 <ul class="links">
                     <li>
-                        <a href="#0"><img src="static/assets/images/footer/neteller.png" alt="footer"></a>
+                        <a href="#0"><img src="/static/assets/images/footer/neteller.png" alt="footer"></a>
                     </li>
                     <li>
-                        <a href="#0"><img src="static/assets/images/footer/skrill.png" alt="footer"></a>
+                        <a href="#0"><img src="/static/assets/images/footer/skrill.png" alt="footer"></a>
                     </li>
                     <li>
-                        <a href="#0"><img src="static/assets/images/footer/paypal.png" alt="footer"></a>
+                        <a href="#0"><img src="/static/assets/images/footer/paypal.png" alt="footer"></a>
                     </li>
                 </ul>
             </div>

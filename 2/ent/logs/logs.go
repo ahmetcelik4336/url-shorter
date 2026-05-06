@@ -18,6 +18,8 @@ const (
 	FieldIP = "ip"
 	// FieldReferer holds the string denoting the referer field in the database.
 	FieldReferer = "referer"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
 	// EdgeLog holds the string denoting the log edge name in mutations.
 	EdgeLog = "log"
 	// Table holds the table name of the logs in the database.
@@ -37,6 +39,7 @@ var Columns = []string{
 	FieldDevice,
 	FieldIP,
 	FieldReferer,
+	FieldCreatedAt,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "logs"
@@ -81,6 +84,11 @@ func ByIP(opts ...sql.OrderTermOption) OrderOption {
 // ByReferer orders the results by the referer field.
 func ByReferer(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReferer, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
 // ByLogField orders the results by log field.

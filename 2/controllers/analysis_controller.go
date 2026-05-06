@@ -10,7 +10,20 @@ import (
 
 type AnalysisController struct {
 	beego.Controller
-	Service services.AnalysisService
+	Service    services.AnalysisService
+	LogService services.LogService
+}
+
+func (c *AnalysisController) GetURLCountTotal() {
+
+	token, err := c.Service.GetURLCountTotal()
+	if err != nil {
+		c.CustomAbort(401, err.Error())
+		return
+	}
+
+	c.Data["json"] = token
+	c.ServeJSON()
 }
 
 // @Title Login
@@ -55,6 +68,17 @@ func (c *AnalysisController) GetURLStats() {
 
 	userID := c.Ctx.Input.GetData("userID").(int)
 	token, err := c.Service.GetURLStats(userID, req)
+	if err != nil {
+		c.CustomAbort(401, err.Error())
+		return
+	}
+
+	c.Data["json"] = token
+	c.ServeJSON()
+}
+
+func (c *AnalysisController) GetPerDayClick() {
+	token, err := c.LogService.GetPerDayClick()
 	if err != nil {
 		c.CustomAbort(401, err.Error())
 		return

@@ -61,6 +61,16 @@ func Init(c *container.Container) {
 		Service: c.UserService,
 	}, "get:GetUserCount")
 
+	beego.Router("/v1/user/GetPerDayClick", &controllers.AnalysisController{
+		Service:    c.AnalysisService,
+		LogService: c.LogService,
+	}, "get:GetPerDayClick")
+
+	beego.Router("/v1/user/GetURLCountTotal", &controllers.AnalysisController{
+		Service:    c.AnalysisService,
+		LogService: c.LogService,
+	}, "get:GetURLCountTotal")
+
 	beego.Router("/v1/user/ValidateToken", &controllers.AuthController{
 		Service: c.UserService,
 	}, "post:ValidateToken")

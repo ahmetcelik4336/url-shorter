@@ -16,3 +16,8 @@ type UsageAnalysisResponse struct {
 	Date  string `json:"date"`
 	Count int    `json:"count"`
 }
+
+type ResponseClicked struct {
+	Status bool `json:"status"`
+	Count  int  `json:"count"`
+}

@@ -14,6 +14,7 @@ import (
 type AnalysisRepository interface {
 	GetUserURLCount(userID int, request dto.UrlCountAnalysisRequest) (*dto.UrlCountAnalysisResponse, error)
 	GetURLStats(userID int, request dto.UsageAnalysisRequest) ([]*dto.UsageAnalysisResponse, error)
+	GetURLCountTotal() (*dto.UrlCountAnalysisResponse, error)
 }
 
 type analysisRepository struct {
@@ -25,7 +26,15 @@ func NewAnalysisRepository(db *ent.Client) AnalysisRepository {
 		db: db,
 	}
 }
+func (r *analysisRepository) GetURLCountTotal() (*dto.UrlCountAnalysisResponse, error) {
+	q := r.db.Url.
+		Query()
+	count, err := q.Count(context.Background())
 
+	return &dto.UrlCountAnalysisResponse{
+		Count: count,
+	}, err
+}
 func (r *analysisRepository) GetUserURLCount(userID int, request dto.UrlCountAnalysisRequest) (*dto.UrlCountAnalysisResponse, error) {
 	q := r.db.Url.
 		Query().

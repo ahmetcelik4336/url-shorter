@@ -10,11 +10,13 @@ type Logs struct {
 	ent.Schema
 }
 
+// $env:GOWORK="off"; go generate ./ent
 func (Logs) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("device"),
 		field.String("ip"),
 		field.String("referer"),
+		field.Time("created_at"),
 	}
 }
 

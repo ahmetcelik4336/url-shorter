@@ -4,12 +4,10 @@ import (
 	"fmt"
 	dto "shared/models"
 	"shared/utils"
-
-	beego "github.com/beego/beego/v2/server/web"
 )
 
 type PanelController struct {
-	beego.Controller
+	BaseController
 }
 
 func (c *PanelController) Panel() {
