@@ -1,9 +1,9 @@
 services:
   - type: web
     name: api-service
-    env: go
+    env: host        # 'go' yerine 'host' yapıyoruz
     plan: free
-    # Ana dizinden komutu veriyoruz, Go otomatik go.work'ü kullanır
+    # Go yüklü mü diye kontrol edip derleme yapıyoruz
     buildCommand: go build -o api-app ./api
     startCommand: ./api-app
     envVars:
@@ -11,10 +11,15 @@ services:
         fromDatabase:
           name: urlshorter
           property: connectionString
+      - key: GO_VERSION
+        value: 1.22.0
 
   - type: web
     name: site-service
-    env: go
+    env: host        # 'go' yerine 'host' yapıyoruz
     plan: free
     buildCommand: go build -o site-app ./client
     startCommand: ./site-app
+    envVars:
+      - key: GO_VERSION
+        value: 1.22.0
