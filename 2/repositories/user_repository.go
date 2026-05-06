@@ -16,12 +16,14 @@ type UserRepository interface {
 }
 
 type userRepository struct {
-	db *ent.Client
+	db      *ent.Client
+	dialect string
 }
 
-func NewUserRepository(db *ent.Client) UserRepository {
+func NewUserRepository(db *ent.Client, dialect string) UserRepository {
 	return &userRepository{
-		db: db,
+		db:      db,
+		dialect: dialect,
 	}
 }
 

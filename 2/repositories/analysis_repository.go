@@ -5,6 +5,7 @@ import (
 	"2/ent/url"
 	"2/ent/user"
 	"context"
+	"shared/db"
 	dto "shared/models"
 	"shared/utils"
 
@@ -18,12 +19,14 @@ type AnalysisRepository interface {
 }
 
 type analysisRepository struct {
-	db *ent.Client
+	db      *ent.Client
+	dialect string
 }
 
-func NewAnalysisRepository(db *ent.Client) AnalysisRepository {
+func NewAnalysisRepository(db *ent.Client, dialect string) AnalysisRepository {
 	return &analysisRepository{
-		db: db,
+		db:      db,
+		dialect: dialect,
 	}
 }
 func (r *analysisRepository) GetURLCountTotal() (*dto.UrlCountAnalysisResponse, error) {
@@ -66,16 +69,23 @@ func (r *analysisRepository) GetURLStats(userID int, request dto.UsageAnalysisRe
 		)
 	}
 
-	err := q.
-		Modify(func(s *sql.Selector) {
-			s.Select(
-				sql.As("DATE_FORMAT(created_at, '%Y-%m-%d')", "date"),
-				sql.As("COUNT(*)", "count"),
-			).
-				GroupBy("DATE(created_at)").
-				OrderBy(sql.Desc("date"))
-		}).
-		Scan(context.Background(), &v)
+	/*err := q.
+	GroupBy(url.FieldCreatedAt). // Bu ham tarih bazlı gruplar
+	Aggregate(ent.Count()).      // Count(*) ekler
+	Scan(context.Background(), &v)*/
+
+	err := q.Modify(func(s *sql.Selector) {
+
+		dialectHandler := db.GetDialect(r.dialect)
+		dateExpr := dialectHandler.FormatDate(url.FieldCreatedAt)
+
+		s.Select(
+			sql.As(dateExpr, "date"),
+			sql.As("COUNT(*)", "count"),
+		).
+			GroupBy(dateExpr).
+			OrderBy(sql.Desc("date"))
+	}).Scan(context.Background(), &v)
 
 	return v, err
 }

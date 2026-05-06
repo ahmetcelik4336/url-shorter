@@ -13,12 +13,12 @@ type Container struct {
 	LogService      services.LogService
 }
 
-func NewContainer(db *ent.Client) *Container {
+func NewContainer(db *ent.Client, driver string) *Container {
 
-	userRepo := repositories.NewUserRepository(db)
-	urlRepo := repositories.NewUrlRepository(db)
-	analysisRepo := repositories.NewAnalysisRepository(db)
-	logRepo := repositories.NewLogRepository(db)
+	userRepo := repositories.NewUserRepository(db, driver)
+	urlRepo := repositories.NewUrlRepository(db, driver)
+	analysisRepo := repositories.NewAnalysisRepository(db, driver)
+	logRepo := repositories.NewLogRepository(db, driver)
 
 	userService := services.NewUserService(userRepo)
 	urlService := services.NewUrlService(urlRepo)

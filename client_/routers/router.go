@@ -13,7 +13,6 @@ func init() {
 
 		beego.NSBefore(func(ctx *context.Context) {
 			lang := ctx.Input.Param(":lang")
-			//fmt.Println(lang)
 			if lang == "" {
 				lang = beego.AppConfig.DefaultString("defaultlang", "en")
 			}

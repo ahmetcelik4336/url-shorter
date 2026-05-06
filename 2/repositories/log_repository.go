@@ -2,9 +2,11 @@ package repositories
 
 import (
 	"context"
+	"shared/db"
 	dto "shared/models"
 
 	"2/ent"
+	"2/ent/logs"
 
 	"entgo.io/ent/dialect/sql"
 )
@@ -15,12 +17,14 @@ type LogRepository interface {
 }
 
 type logRepository struct {
-	db *ent.Client
+	db      *ent.Client
+	dailect string
 }
 
-func NewLogRepository(db *ent.Client) LogRepository {
+func NewLogRepository(db *ent.Client, dialect string) LogRepository {
 	return &logRepository{
-		db: db,
+		db:      db,
+		dailect: dialect,
 	}
 }
 func (r *logRepository) GetPerDayClick() (float64, error) {
@@ -31,8 +35,12 @@ func (r *logRepository) GetPerDayClick() (float64, error) {
 
 	err := r.db.Logs.Query().
 		Modify(func(s *sql.Selector) {
+
+			dialectHandler := db.GetDialect(r.dailect)
+			dateExpr := dialectHandler.FormatDate(logs.FieldCreatedAt)
+
 			s.Select(
-				sql.As("DATE_FORMAT(created_at, '%Y-%m-%d')", "date"),
+				sql.As(dateExpr, "date"),
 				sql.As("COUNT(*)", "count"),
 			).
 				GroupBy("DATE(created_at)").

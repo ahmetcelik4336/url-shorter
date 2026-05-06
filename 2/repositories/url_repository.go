@@ -24,12 +24,14 @@ type UrlRepository interface {
 }
 
 type urlRepository struct {
-	db *ent.Client
+	db      *ent.Client
+	dialect string
 }
 
-func NewUrlRepository(db *ent.Client) UrlRepository {
+func NewUrlRepository(db *ent.Client, dialect string) UrlRepository {
 	return &urlRepository{
-		db: db,
+		db:      db,
+		dialect: dialect,
 	}
 }
 

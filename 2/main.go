@@ -43,9 +43,9 @@ func main() {
 
 	_ = godotenv.Load()
 
-	db := database.Init()
+	db, driver := database.Init()
 
-	appContainer = container.NewContainer(db)
+	appContainer = container.NewContainer(db, driver)
 
 	routers.Init(appContainer)
 
@@ -56,6 +56,6 @@ func main() {
 
 	// Beego'nun çalıştığı port üzerinden Swagger'ı açmak için:
 	beego.Handler("/swagger/*", httpSwagger.WrapHandler)
-
+	//port := os.Getenv("PORT")
 	web.Run()
 }
