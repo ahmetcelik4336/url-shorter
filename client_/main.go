@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "client_/routers"
+	"os"
 	"shared/helpers"
 	"shared/validator"
 
@@ -11,5 +12,9 @@ import (
 func main() {
 	validator.Init()
 	helpers.Init()
-	beego.Run()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8081"
+	}
+	beego.Run(":" + port)
 }

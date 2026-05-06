@@ -5,6 +5,7 @@ import (
 	"2/database"
 	"2/routers"
 	_ "2/routers"
+	"os"
 	"shared/validator"
 
 	"github.com/beego/beego/v2/server/web"
@@ -56,6 +57,9 @@ func main() {
 
 	// Beego'nun çalıştığı port üzerinden Swagger'ı açmak için:
 	beego.Handler("/swagger/*", httpSwagger.WrapHandler)
-	//port := os.Getenv("PORT")
-	web.Run()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	web.Run(":" + port)
 }
