@@ -2,9 +2,9 @@ services:
   - type: web
     name: api-service
     env: go
-    rootDir: api
-    buildCommand: go build -o app .
-    startCommand: ./app
+    plan: free
+    buildCommand: cd api && go build -o app .
+    startCommand: cd api && ./app
     goVersion: 1.22
     envVars:
       - key: DATABASE_URL
@@ -16,6 +16,7 @@ services:
     name: site-service
     env: go
     rootDir: client
-    buildCommand: go build -o app .
-    startCommand: ./app
+    plan: free
+    buildCommand: cd client && go build -o app .
+    startCommand: cd client && ./app
     goVersion: 1.22
