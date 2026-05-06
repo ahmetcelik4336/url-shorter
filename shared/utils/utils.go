@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
-	beego "github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/context"
 )
 
@@ -43,10 +43,9 @@ func SendRequest[T any](req any, path, method string, ctx *context.Context) (T, 
 	rawToken := ctx.Input.GetData("token")
 	tokenStr, _ := rawToken.(string)
 
-	apiUrl, err := beego.AppConfig.String("api_url")
-	if err != nil {
-		return res, fmt.Errorf("config error: %v", err)
-	}
+	//apiUrl, err := beego.AppConfig.String("api_url")
+
+	apiUrl := os.Getenv("API_URL")
 
 	var bodyReader io.Reader
 	if req != nil && method != "GET" {
