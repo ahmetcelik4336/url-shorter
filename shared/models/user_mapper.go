@@ -1,6 +1,6 @@
 package dto
 
-import "2/ent"
+import "api/ent"
 
 func ToUserResponse(p *ent.User) *UserResponse {
 

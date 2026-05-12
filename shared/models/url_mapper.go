@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"2/ent"
+	"api/ent"
 )
 
 func ToUrlResponse(p *ent.Url) *UrlResponse {

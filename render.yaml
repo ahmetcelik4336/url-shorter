@@ -3,7 +3,7 @@ services:
     name: api-service
     env: host        # Render'ın otomatik Go taramasını durdurur
     plan: free
-    buildCommand: go build -o api-app ./2 && cp -r ./api/conf .
+    buildCommand: go build -o api-app ./2 && cp -r ./2/conf .
     startCommand: ./api-app
     envVars:
       - key: DATABASE_URL

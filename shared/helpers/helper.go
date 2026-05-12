@@ -21,4 +21,5 @@ func Init() {
 
 		return fmt.Sprintf("%s/%s/%s", baseurl, l, path)
 	})
+
 }

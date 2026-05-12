@@ -1,28 +1,28 @@
 <div class="account-section bg_img" data-background="/static/assets/images/account-bg.jpg">
     <div class="container">
         <div class="account-title text-center">
-            <a href="index-2.html" class="back-home"><i class="fas fa-angle-left"></i><span>Back <span class="d-none d-sm-inline-block">To Cortaly</span></span></a>
-            <a href="index-2.html" class="logo">
+            <a href="{{baseurl .slug ""}}" class="back-home"><i class="fas fa-angle-left"></i>
+                Home
+            </a>
+            <a href="{{baseurl .slug ""}}" class="logo">
                 <img src="/static/assets/images/logo/logo.png" alt="logo">
             </a>
         </div>
         <div class="account-wrapper">
             <div class="account-header">
                 <h4 class="title">Let's get started</h4>
-                <a href="#0" class="sign-in-with"><img src="/static/assets/images/icon/google.png" alt="icon"><span>Sign Up with Google</span></a>
+
             </div>
-            <div class="or">
-                <span>OR</span>
-            </div>
+
             <div class="account-body">
-                <span class="d-block mb-20">Sign up with your work email</span>
+               
                 <form class="account-form" method="post" action="{{baseurl .slug "auth/register"}}">
                     <div style="text-align: center;color: red;">
                         {{.Message}}
-                       </div>
+                    </div>
                     <div class="form-group">
                         <label for="sign-up">Your Name </label>
-                        <input type="text" placeholder="Enter Your Name " name="name" id="sign-up">
+                        <input type="text" name="name" id="sign-up">
                         {{if .Errors.Name}}
                         <div class="errors" style="color: red; font-size: 12px;">
                             {{index .Errors "Name"}}
@@ -31,7 +31,7 @@
                     </div>
                     <div class="form-group">
                         <label for="sign-up">Your Email </label>
-                        <input type="text" placeholder="Enter Your Email " name="email" id="sign-up">
+                        <input type="text" name="email" id="sign-up">
                         {{if .Errors.Email}}
                         <div class="errors" style="color: red; font-size: 12px;">
                             {{index .Errors "Email"}}
@@ -41,7 +41,7 @@
 
                     <div class="form-group">
                         <label for="sign-up">Your Password </label>
-                        <input type="text" placeholder="Enter Your Email " name="password" id="sign-up">
+                        <input type="text"  name="password" id="sign-up">
                         {{if .Errors.Password}}
                         <div class="errors" style="color: red; font-size: 12px;">
                             {{index .Errors "Password"}}
@@ -51,7 +51,7 @@
 
                     <div class="form-group">
                         <label for="sign-up">Password Repeat </label>
-                        <input type="text" placeholder="Enter Your Email " name="password_confirm" id="sign-up">
+                        <input type="text"  name="password_confirm" id="sign-up">
                         {{if .Errors.PasswordConfirm}}
                         <div class="errors" style="color: red; font-size: 12px;">
                             {{index .Errors "PasswordConfirm"}}
@@ -60,11 +60,11 @@
                     </div>
                     <div class="form-group text-center">
                         <button type="submit">Try It Now</button>
-                        <span class="d-block mt-15">Already have an account? <a href="/auth/login">Sign In</a></span>
+                        <span class="d-block mt-15">Already have an account? <a href="{{baseurl .slug "auth/login"}}">Sign In</a></span>
                     </div>
                 </form>
             </div>
         </div>
-       
+
     </div>
 </div>

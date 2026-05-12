@@ -2,15 +2,15 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "run-bee-backend",
+            "label": "api",
             "type": "shell",
             "command": "bee run",
-            "options": { "cwd": "${workspaceFolder}/2" },
+            "options": { "cwd": "${workspaceFolder}/api" },
             "isBackground": true,
             "problemMatcher": ["$go"]
         },
         {
-            "label": "run-bee-client",
+            "label": "client_",
             "type": "shell",
             "command": "bee run",
             "options": { "cwd": "${workspaceFolder}/client_" },

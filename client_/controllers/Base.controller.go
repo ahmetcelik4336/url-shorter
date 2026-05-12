@@ -1,7 +1,8 @@
 package controllers
 
 import (
-	"fmt"
+	dto "shared/models"
+	"shared/utils"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -21,11 +22,10 @@ func (c *BaseController) Prepare() {
 		lang = beego.AppConfig.DefaultString("defaultlang", "en")
 	}
 
-	// Verileri set et
 	c.Data["lang"] = lang
 	c.Data["slug"] = lang
 	c.Data["IsShowFooter"] = "show"
 	c.Data["IsShowHeader"] = "show"
-
-	fmt.Println("Seçilen Dil:", lang)
+	generalSetting, _ := utils.SendRequest[*dto.GeneralSettings](nil, "setting/get/general", "GET", c.Ctx)
+	c.Data["conf"] = generalSetting
 }

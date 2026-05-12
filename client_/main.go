@@ -12,6 +12,7 @@ import (
 func main() {
 	validator.Init()
 	helpers.Init()
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8081"

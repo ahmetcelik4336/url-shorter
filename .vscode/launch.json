@@ -6,8 +6,8 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/2/main.go",
-            "preLaunchTask": "run-bee-backend"
+            "program": "${workspaceFolder}/api/main.go",
+            "preLaunchTask": "api"
         },
         {
             "name": "Frontend (Client)",
@@ -15,7 +15,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/client_/main.go",
-            "preLaunchTask": "run-bee-client"
+            "preLaunchTask": "client_"
         }
     ],
     "compounds": [

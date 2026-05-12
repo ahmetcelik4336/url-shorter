@@ -1,15 +1,16 @@
 <div class="account-section bg_img" data-background="/static/assets/images/account-bg.jpg">
     <div class="container">
         <div class="account-title text-center">
-            <a href="index-2.html" class="back-home"><i class="fas fa-angle-left"></i><span>Back <span
-                        class="d-none d-sm-inline-block">To Cortaly</span></span></a>
-            <a href="index-2.html" class="logo">
+            <a href="{{baseurl .slug ""}}" class="back-home"><i class="fas fa-angle-left"></i>
+            Home
+            </a>
+            <a href="{{baseurl .slug ""}}" class="logo">
                 <img src="/static/assets/images/logo/logo.png" alt="logo">
             </a>
         </div>
         <div class="account-wrapper">
             <div class="account-body">
-                <h4 class="title mb-20">Welcome To Cortaly</h4>
+                <h4 class="title mb-20">Welcome To {{.conf.AppName}}</h4>
                 <form class="account-form" method="POST" action="{{baseurl .slug "auth/login"}}">
                    <div style="text-align: center;color: red;">
                     {{.Message}}
@@ -50,9 +51,7 @@
             </div>
             <div class="account-header pb-0">
                 <span class="d-block mb-30 mt-2">Sign up with your work email</span>
-                <a href="#0" class="sign-in-with"><img src="/static/assets/images/icon/google.png" alt="icon"><span>Sign
-                        Up with Google</span></a>
-                <span class="d-block mt-15">Don't have an account? <a href="/auth/register">Sign Up Here</a></span>
+                <span class="d-block mt-15">Don't have an account? <a href="{{baseurl .slug "auth/register"}}">Sign Up Here</a></span>
             </div>
         </div>
     </div>
