@@ -15,9 +15,7 @@ services:
     runtime: go
     plan: free
     buildCommand: |
-      mkdir -p bin
-      go build -o bin/site-service ./client_
-      cp -r ./client_/conf bin/conf || true
+      mkdir -p bin && go build -o bin/site-service ./client_ && cp -r ./client_/conf ./bin/ || true && cp -r ./client_/views ./bin/
     startCommand: cd bin && ./site-service
     envVars:
       - key: GO_VERSION
