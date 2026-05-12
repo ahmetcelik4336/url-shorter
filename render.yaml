@@ -3,7 +3,6 @@ services:
     name: api-service
     runtime: go
     plan: free
-    # Root dizinden build alırken shared paketlerini görebilmesi için:
     buildCommand: go build -o bin/api-service ./api && cp -r ./api/conf ./bin/conf || true
     startCommand: ./bin/api-service
     envVars:
@@ -18,7 +17,6 @@ services:
     name: site-service
     runtime: go
     plan: free
-    # Client build komutu
     buildCommand: go build -o bin/site-service ./client_
     startCommand: ./bin/site-service
     envVars:
