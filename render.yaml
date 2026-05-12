@@ -1,28 +1,30 @@
 services:
   - type: web
     name: api-service
-    env: host        # Render'ın otomatik Go taramasını durdurur
+    runtime: go
     plan: free
-    buildCommand: go build -o api-app ./2 && cp -r ./2/conf .
-    startCommand: ./api-app
+    # Root dizinden build alırken shared paketlerini görebilmesi için:
+    buildCommand: go build -o bin/api-service ./api && cp -r ./api/conf ./bin/conf || true
+    startCommand: ./bin/api-service
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: urlshorter
+          name: urldb
           property: connectionString
       - key: GO_VERSION
         value: 1.22.0
 
   - type: web
     name: site-service
-    env: host
+    runtime: go
     plan: free
-    buildCommand: go build -o site-app ./client_
-    startCommand: ./site-app
+    # Client build komutu
+    buildCommand: go build -o bin/site-service ./client_
+    startCommand: ./bin/site-service
     envVars:
       - key: GO_VERSION
         value: 1.22.0
       - key: API_URL
         fromStack:
-          name: api-service # Yukarıdaki servisin adıyla eşleşmeli
-          property: host    # Render bu servisin iç adresini API_URL'e atar
+          name: api-service
+          property: host
