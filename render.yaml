@@ -17,6 +17,7 @@ services:
     buildCommand: |
       mkdir -p bin
       go build -o bin/site-service ./client_
+      cp -r ./api/conf bin/conf || true
     startCommand: cd bin && ./site-service
     envVars:
       - key: GO_VERSION
