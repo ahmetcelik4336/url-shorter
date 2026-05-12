@@ -3,15 +3,27 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
-	"github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/context"
 )
+
+var apiurl []byte
+
+func InitUtils() error {
+	key := os.Getenv("APIURL")
+	if key == "" {
+		return errors.New("APIURL environment variable is not set")
+	}
+	apiurl = []byte(key)
+	return nil
+}
 
 func CallAPI(method, url, token string, body io.Reader) (*http.Response, error) {
 	client := &http.Client{}
@@ -43,7 +55,7 @@ func SendRequest[T any](req any, path, method string, ctx *context.Context) (T, 
 	rawToken := ctx.Input.GetData("token")
 	tokenStr, _ := rawToken.(string)
 
-	apiUrl, err := web.AppConfig.String("api_url")
+	apiUrl := string(apiurl)
 
 	var bodyReader io.Reader
 	if req != nil && method != "GET" {

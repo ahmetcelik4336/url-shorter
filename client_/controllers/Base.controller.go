@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"os"
 	dto "shared/models"
 	"shared/utils"
 
@@ -19,7 +20,7 @@ func (c *BaseController) Prepare() {
 	}
 
 	if lang == "" || lang == nil {
-		lang = beego.AppConfig.DefaultString("defaultlang", "en")
+		lang = os.Getenv("DEFAULTLANG")
 	}
 
 	c.Data["lang"] = lang

@@ -3,6 +3,7 @@ package routers
 import (
 	"client_/controllers"
 	"client_/middleware"
+	"os"
 
 	beego "github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/context"
@@ -14,7 +15,7 @@ func init() {
 		beego.NSBefore(func(ctx *context.Context) {
 			lang := ctx.Input.Param(":lang")
 			if lang == "" {
-				lang = beego.AppConfig.DefaultString("defaultlang", "en")
+				lang = os.Getenv("DEFAULTLANG")
 			}
 			ctx.Input.SetData("lang", lang)
 
