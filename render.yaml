@@ -23,6 +23,7 @@ services:
       - key: GO_VERSION
         value: 1.22.0
       - key: API_URL
-        fromStack:
+        fromService:
           name: api-service
+          type: web
           property: host
