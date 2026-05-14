@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
-<!-- Mirrored from pixner.net/cortaly/main/sign-in.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 01 May 2026 15:10:45 GMT -->
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,29 +45,23 @@
                     <li>
                         <a href="/">Home</a>
                     </li>
-                    <li>
-                        <a href="payout-rates.html">Payout Rates</a>
-                    </li>
+
                     <li>
                         <a href="faq.html">Faq</a>
                     </li>
-                    <li>
-                        <a href="#0">Blog</a>
-                        <ul class="submenu">
-                            <li>
-                                <a href="blog.html">Blog</a>
-                            </li>
-                            <li>
-                                <a href="blog-single.html">Blog Single</a>
-                            </li>
-                        </ul>
-                    </li>
+                    {{if eq .userid 0}}
                     <li class="d-sm-none text-center">
                         <a href="{{baseurl .slug "auth/login"}}" class="header-button active">Login</a>
                     </li>
                     <li class="d-sm-none text-center">
                         <a href="/auth/register" class="mb-4 header-button">Register</a>
                     </li>
+                    {{else}}
+                    <li class="d-sm-none text-center">
+                        <a href="{{baseurl .slug "panel"}}" class="mb-4 header-button">Panel</a>
+                    </li>
+                    {{end}}
+
                 </ul>
                 <div class="header-bar d-lg-none mr-sm-3">
                     <span></span>
@@ -78,8 +69,13 @@
                     <span></span>
                 </div>
                 <div class="header-right">
-                    <a href="{{baseurl .slug "auth/login"}}" class="header-button d-none d-sm-inline-block m-0 active">Login</a>
+                    {{if eq .userid 0}}
+                    <a href="{{baseurl .slug "auth/login"}}"
+                        class="header-button d-none d-sm-inline-block m-0 active">Login</a>
                     <a href="/auth/register" class="header-button d-none d-sm-inline-block m-0">Register</a>
+                    {{else}}
+                    <a href="{{baseurl .slug "panel"}}" class="header-button d-none d-sm-inline-block m-0">Panel</a>
+                    {{end}}
                 </div>
             </div>
         </div>

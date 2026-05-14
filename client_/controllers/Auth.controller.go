@@ -57,7 +57,7 @@ func (c *AuthController) LoginHandler() {
 		return
 	}
 
-	apiResp, _ := utils.SendRequest[dto.LoginResponse](req, "user/login", "POST", c.Ctx)
+	apiResp, _ := utils.SendRequest[dto.LoginResponse](req, "user/login", "POST", c.Ctx, "")
 
 	if apiResp.Token != "" {
 		c.SetSession("token", apiResp.Token)
@@ -97,7 +97,7 @@ func (c *AuthController) RegisterHandler() {
 		return
 	}
 
-	apiResp, _ := utils.SendRequest[dto.RegisterResponse](req, "user/register", "POST", c.Ctx)
+	apiResp, _ := utils.SendRequest[dto.RegisterResponse](req, "user/register", "POST", c.Ctx, "")
 
 	if apiResp.Status == true {
 		flash := beego.NewFlash()

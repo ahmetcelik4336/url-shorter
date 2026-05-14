@@ -18,7 +18,6 @@ func init() {
 				lang = os.Getenv("DEFAULTLANG")
 			}
 			ctx.Input.SetData("lang", lang)
-
 		}),
 
 		beego.NSNamespace("/auth",
@@ -29,17 +28,20 @@ func init() {
 		beego.NSRouter("/", &controllers.MainController{}),
 
 		beego.NSNamespace("/panel",
-			beego.NSBefore(func(ctx *context.Context) {
-				middleware.PanelFilter(ctx)
-			}),
 			beego.NSRouter("/", &controllers.PanelController{}, "get:Panel"),
 		),
 	)
 
 	beego.AddNamespace(ns)
 
-	lang := beego.AppConfig.DefaultString("defaultlang", "en")
+	beego.InsertFilter("/:lang/panel/*", beego.BeforeRouter, middleware.PanelFilter)
+	beego.InsertFilter("/:lang/panel", beego.BeforeRouter, middleware.PanelFilter)
+
 	beego.Get("/", func(ctx *context.Context) {
-		ctx.Redirect(302, "/"+lang) // Varsayılan dil
+		lang := ctx.Input.Param(":lang")
+		if lang == "" {
+			lang = os.Getenv("DEFAULTLANG")
+		}
+		ctx.Redirect(302, "/"+lang)
 	})
 }

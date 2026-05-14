@@ -18,6 +18,11 @@ func main() {
 	if err := utils.InitUtils(); err != nil {
 		log.Fatal(err)
 	}
+
+	if err := utils.InitJWT(); err != nil {
+		log.Fatal(err)
+	}
+
 	validator.Init()
 	helpers.Init()
 

@@ -1,33 +1,33 @@
 package middleware
 
 import (
-	"encoding/json"
-	"fmt"
+	"os"
 	dto "shared/models"
 	"shared/utils"
+	"strconv"
 
-	beego "github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/context"
 )
 
 func PanelFilter(ctx *context.Context) {
+	lang := ctx.Input.Param(":lang")
+	if lang == "" {
+		lang = os.Getenv("DEFAULTLANG")
+	}
 	token := ctx.Input.Session("token")
 	if token == nil || token == "" {
-		ctx.Redirect(302, "/auth/login")
+		ctx.Redirect(302, "/"+lang+"/auth/login")
 		return
 	}
-	//fmt.Println(token)
-	apiUrl, _ := beego.AppConfig.String("api_url")
 
-	res, _ := utils.CallAPI("POST", apiUrl+"user/ValidateToken", token.(string), nil)
-	defer res.Body.Close()
-	var apiResp dto.UserResponse
-	json.NewDecoder(res.Body).Decode(&apiResp)
-	if apiResp.Email == "" {
-		ctx.Redirect(302, "/auth/login")
+	tokenn, _ := token.(string)
+
+	apiResp, err := utils.SendRequest[*dto.UserResponse](nil, "user/ValidateToken", "POST", ctx, tokenn)
+	if err != nil || strconv.Itoa(apiResp.Id) != "" {
+		ctx.Redirect(302, "/"+lang+"/auth/login")
 		return
 	}
-	fmt.Println(apiResp)
+
 	ctx.Input.SetData("user", apiResp)
 	ctx.Input.SetData("token", token)
 }
