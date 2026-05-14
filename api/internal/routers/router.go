@@ -94,7 +94,11 @@ func Init(c *container.Container) {
 		middleware.JWTMiddleware(ctx)
 	})
 
-	beego.InsertFilter("/v1/url/*", beego.BeforeRouter, func(ctx *context.Context) {
+	beego.InsertFilter("v1/*", beego.BeforeRouter, func(ctx *context.Context) {
+		middleware.ApiKeyMiddleware(ctx)
+	})
+
+	/*beego.InsertFilter("/v1/url/*", beego.BeforeRouter, func(ctx *context.Context) {
 		redisIsActive, _ := beego.AppConfig.Bool("redis_active")
 		if redisIsActive && !middleware.CheckRateLimit(ctx, "create_", 5) {
 			return
@@ -106,7 +110,7 @@ func Init(c *container.Container) {
 		if redisIsActive && !middleware.CheckRateLimit(ctx, "bulkcreate_", 3) {
 			return
 		}
-	})
+	})*/
 
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
 		AllowOrigins:     []string{"http://localhost:8081"}, // Client adresin

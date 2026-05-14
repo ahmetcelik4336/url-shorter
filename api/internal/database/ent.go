@@ -15,7 +15,7 @@ var Client *ent.Client
 func Init() (*ent.Client, string) {
 
 	driver := os.Getenv("DATABASE_DRIVER")
-	dsn := os.Getenv("DATABASE_URL")
+	dsn := os.Getenv("DATABASE_URL_MYSQL")
 
 	client, err := ent.Open(driver, dsn)
 	if err != nil {

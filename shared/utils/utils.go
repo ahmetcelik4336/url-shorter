@@ -15,6 +15,7 @@ import (
 )
 
 var apiurl []byte
+var apikey []byte
 
 func InitUtils() error {
 	key := os.Getenv("APIURL")
@@ -22,10 +23,16 @@ func InitUtils() error {
 		return errors.New("APIURL environment variable is not set")
 	}
 	apiurl = []byte(key)
+
+	apikey := os.Getenv("APIKEY")
+	if apikey == "" {
+		return errors.New("APIKEY environment variable is not set")
+	}
+	apiurl = []byte(key)
 	return nil
 }
 
-func CallAPI(method, url, token string, body io.Reader) (*http.Response, error) {
+func CallAPI(method, url, token string, apikey string, body io.Reader) (*http.Response, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
@@ -35,6 +42,8 @@ func CallAPI(method, url, token string, body io.Reader) (*http.Response, error) 
 	if token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
+
+	req.Header.Set("APIKEY", apikey)
 	req.Header.Set("Content-Type", "application/json")
 
 	return client.Do(req)
@@ -49,10 +58,13 @@ func GetTokenFromHeader(header string) string {
 	return strings.Replace(header, "Bearer ", "", 1)
 }
 
-func SendRequest[T any](req any, path, method string, ctx *context.Context) (T, error) {
+func SendRequest[T any](req any, path, method string, ctx *context.Context, token string) (T, error) {
 	var res T
 
 	rawToken := ctx.Input.GetData("token")
+	if rawToken == nil {
+		rawToken = token
+	}
 	tokenStr, _ := rawToken.(string)
 
 	apiUrl := string(apiurl)
@@ -66,7 +78,7 @@ func SendRequest[T any](req any, path, method string, ctx *context.Context) (T, 
 		bodyReader = bytes.NewBuffer(jsonData)
 	}
 
-	resp, err := CallAPI(method, apiUrl+path, tokenStr, bodyReader)
+	resp, err := CallAPI(method, apiUrl+path, tokenStr, string(apikey), bodyReader)
 	if err != nil {
 		return res, err
 	}
