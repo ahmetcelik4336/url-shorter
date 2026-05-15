@@ -3,7 +3,6 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,24 +14,14 @@ import (
 )
 
 var apiurl []byte
-var apikey []byte
 
 func InitUtils() error {
 	key := os.Getenv("APIURL")
-	if key == "" {
-		return errors.New("APIURL environment variable is not set")
-	}
-	apiurl = []byte(key)
-
-	apikey := os.Getenv("APIKEY")
-	if apikey == "" {
-		return errors.New("APIKEY environment variable is not set")
-	}
 	apiurl = []byte(key)
 	return nil
 }
 
-func CallAPI(method, url, token string, apikey string, body io.Reader) (*http.Response, error) {
+func CallAPI(method, url, token string, body io.Reader) (*http.Response, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
@@ -42,7 +31,7 @@ func CallAPI(method, url, token string, apikey string, body io.Reader) (*http.Re
 	if token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
-
+	apikey := os.Getenv("APIKEY")
 	req.Header.Set("APIKEY", apikey)
 	req.Header.Set("Content-Type", "application/json")
 
@@ -78,7 +67,7 @@ func SendRequest[T any](req any, path, method string, ctx *context.Context, toke
 		bodyReader = bytes.NewBuffer(jsonData)
 	}
 
-	resp, err := CallAPI(method, apiUrl+path, tokenStr, string(apikey), bodyReader)
+	resp, err := CallAPI(method, apiUrl+path, tokenStr, bodyReader)
 	if err != nil {
 		return res, err
 	}

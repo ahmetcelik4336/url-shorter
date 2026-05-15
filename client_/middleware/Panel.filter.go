@@ -23,7 +23,7 @@ func PanelFilter(ctx *context.Context) {
 	tokenn, _ := token.(string)
 
 	apiResp, err := utils.SendRequest[*dto.UserResponse](nil, "user/ValidateToken", "POST", ctx, tokenn)
-	if err != nil || strconv.Itoa(apiResp.Id) != "" {
+	if err != nil || strconv.Itoa(apiResp.Id) == "" {
 		ctx.Redirect(302, "/"+lang+"/auth/login")
 		return
 	}

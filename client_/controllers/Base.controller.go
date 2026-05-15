@@ -28,7 +28,7 @@ func (c *BaseController) Prepare() {
 	c.Data["slug"] = lang
 	c.Data["IsShowFooter"] = "show"
 	c.Data["IsShowHeader"] = "show"
-	generalSetting, _ := utils.SendRequest[*dto.GeneralSettings](nil, "setting/get/general", "GET", c.Ctx, "")
+	generalSetting, _ := utils.SendRequest[dto.GeneralSettings](nil, "setting/get/general", "GET", c.Ctx, "")
 	c.Data["conf"] = generalSetting
 	c.Data["userid"] = 0
 	token := c.GetSession("token")

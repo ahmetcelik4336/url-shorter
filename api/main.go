@@ -28,7 +28,7 @@ var appContainer *container.Container
 // @host            localhost:8080
 // @BasePath        /v1/
 func main() {
-	validator.Init()
+
 	/*redisIsActive, _ := beego.AppConfig.Bool("redis_active")
 	if redisIsActive {
 		opt, err := redis.ParseURL("rediss://default:gQAAAAAAAbIoAAIgcDFmYzNjYWQ2MzZiMjE0MTFmODY5MmMzNTRhN2I0OWMxZg@learning-primate-111144.upstash.io:6379")
@@ -43,7 +43,12 @@ func main() {
 
 	_ = godotenv.Load()
 
+	validator.Init()
 	if err := utils.InitJWT(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := utils.InitUtils(); err != nil {
 		log.Fatal(err)
 	}
 
