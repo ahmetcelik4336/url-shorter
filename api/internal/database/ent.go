@@ -17,9 +17,14 @@ func Init() (*ent.Client, string) {
 
 	driver := os.Getenv("DATABASE_DRIVER")
 	//dsn := os.Getenv("DATABASE_URL_MYSQL")
-	dsn := os.Getenv("DATABASE_URL")
-	if !strings.Contains(dsn, "sslmode") {
-		dsn += "?sslmode=require"
+	dsn := os.Getenv("DATABASE_PUBLIC_URL")
+	// SSL Mode kontrolü
+	if driver == "postgres" && !strings.Contains(dsn, "sslmode") {
+		if strings.Contains(dsn, "?") {
+			dsn += "&sslmode=require"
+		} else {
+			dsn += "?sslmode=require"
+		}
 	}
 	client, err := ent.Open(driver, dsn)
 	if err != nil {
