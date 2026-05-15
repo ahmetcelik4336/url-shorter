@@ -31,6 +31,8 @@ func main() {
 		port = "8081"
 	}
 
+	beego.SetStaticPath("/static", "static")
+
 	if _, err := os.Stat("static"); os.IsNotExist(err) {
 		log.Println("HATA: static klasörü çalışma dizininde BULUNAMADI!")
 	} else {
