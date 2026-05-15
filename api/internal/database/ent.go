@@ -16,7 +16,7 @@ func Init() (*ent.Client, string) {
 
 	driver := os.Getenv("DATABASE_DRIVER")
 	//dsn := os.Getenv("DATABASE_URL_MYSQL")
-	dsn := os.Getenv("Postgres.DATABASE_URL")
+	dsn := os.Getenv("DATABASE_URL")
 	client, err := ent.Open(driver, dsn)
 	if err != nil {
 		log.Fatalf("PostgreSQL bağlantısı kurulamadı: %v", err)
