@@ -5,6 +5,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -17,6 +18,9 @@ func Init() (*ent.Client, string) {
 	driver := os.Getenv("DATABASE_DRIVER")
 	//dsn := os.Getenv("DATABASE_URL_MYSQL")
 	dsn := os.Getenv("DATABASE_URL")
+	if !strings.Contains(dsn, "sslmode") {
+		dsn += "?sslmode=require"
+	}
 	client, err := ent.Open(driver, dsn)
 	if err != nil {
 		log.Fatalf("PostgreSQL bağlantısı kurulamadı: %v", err)
