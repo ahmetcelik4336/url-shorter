@@ -17,7 +17,7 @@ func Init() (*ent.Client, string) {
 
 	driver := os.Getenv("DATABASE_DRIVER")
 	//dsn := os.Getenv("DATABASE_URL_MYSQL")
-	dsn := os.Getenv("DATABASE_PUBLIC_URL")
+	dsn := os.Getenv("DATABASE_URL")
 	// SSL Mode kontrolü
 	if driver == "postgres" && !strings.Contains(dsn, "sslmode") {
 		if strings.Contains(dsn, "?") {
@@ -26,6 +26,10 @@ func Init() (*ent.Client, string) {
 			dsn += "?sslmode=require"
 		}
 	}
+
+	log.Println("DRIVER:", driver)
+	log.Println("DSN:", dsn)
+
 	client, err := ent.Open(driver, dsn)
 	if err != nil {
 		log.Fatalf("PostgreSQL bağlantısı kurulamadı: %v", err)
