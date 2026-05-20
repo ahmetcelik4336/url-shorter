@@ -9,18 +9,15 @@ import (
 
 func Init() {
 	beego.AddFuncMap("baseurl", func(lang interface{}, path string) string {
-		l, ok := lang.(string)
-		if !ok || l == "" {
-			val := os.Getenv("BASEURL")
-			if val == "" {
-				l = "en"
-			} else {
-				l = val
-			}
-		}
+		l, _ := lang.(string)
 		baseurl := os.Getenv("BASEURL")
-
 		return fmt.Sprintf("%s/%s/%s", baseurl, l, path)
 	})
 
+}
+
+func Baseurl(lang interface{}, path string) string {
+	l, _ := lang.(string)
+	baseurl := os.Getenv("BASEURL")
+	return fmt.Sprintf("%s/%s/%s", baseurl, l, path)
 }

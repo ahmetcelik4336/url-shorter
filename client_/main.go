@@ -33,11 +33,5 @@ func main() {
 
 	beego.SetStaticPath("/static", "static")
 
-	if _, err := os.Stat("static"); os.IsNotExist(err) {
-		log.Println("HATA: static klasörü çalışma dizininde BULUNAMADI!")
-	} else {
-		log.Println("OK: static klasörü bulundu.")
-	}
-
 	beego.Run(":" + port)
 }

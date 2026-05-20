@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>Cortaly - URL Shortner HTML Template</title>
+    <title>{{.conf.AppName}}</title>
 
     <link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/all.min.css">
@@ -17,8 +17,8 @@
     <link rel="stylesheet" href="/static/assets/css/flaticon.css">
     <link rel="stylesheet" href="/static/assets/css/main.css">
 
-    <link rel="shortcut icon" href="/static/assets/images/favicon.png" type="image/x-icon">
-
+    <link rel="shortcut icon" href="/static/img/lg8.png" type="image/x-icon">
+    <script src="/static/assets/js/jquery-3.3.1.min.js"></script>
 
 </head>
 
@@ -33,17 +33,17 @@
     <a href="#0" class="scrollToTop"><i class="fas fa-angle-up"></i></a>
     <div class="overlay"></div>
     {{if eq .IsShowHeader "show"}}
-    <header class="header-section">
+    <header class="header-section " {{if eq .headerActive "active" }} style="background: #2c18b4 !important" {{end}}>
         <div class="container">
             <div class="header-wrapper">
                 <div class="logo">
                     <a href="/">
-                        <img src="/static/assets/images/logo/logo.png" alt="logo">
+                        <img src="/static/img/lg8.png" style="width: 70px;" alt="logo">
                     </a>
                 </div>
                 <ul class="menu">
                     <li>
-                        <a href="/">Home</a>
+                        <a href="{{baseurl .slug ""}}">Home</a>
                     </li>
 
                     <li>
@@ -51,14 +51,14 @@
                     </li>
                     {{if eq .userid 0}}
                     <li class="d-sm-none text-center">
-                        <a href="{{baseurl .slug "auth/login"}}" class="header-button active">Login</a>
+                        <a href='{{baseurl .slug "auth/login"}}' class="header-button active">Login</a>
                     </li>
                     <li class="d-sm-none text-center">
-                        <a href="/auth/register" class="mb-4 header-button">Register</a>
+                        <a href='{{baseurl .slug "auth/register"}}' class="mb-4 header-button">Register</a>
                     </li>
                     {{else}}
                     <li class="d-sm-none text-center">
-                        <a href="{{baseurl .slug "panel"}}" class="mb-4 header-button">Panel</a>
+                        <a href='{{baseurl .slug "panel"}}' class="mb-4 header-button">Panel</a>
                     </li>
                     {{end}}
 
@@ -68,13 +68,37 @@
                     <span></span>
                     <span></span>
                 </div>
-                <div class="header-right">
+                <div class="header-right d-flex flex-row" style="gap: 10px;">
+
+                    <div class="dropdown">
+                        <span class="text-white dropdown-toggle mr-3" type="button" id="dropdownMenuButton1"
+                            data-toggle="dropdown" aria-expanded="false">
+                            {{.currentLang}}
+                        </span>
+
+                        <div class="dropdown-menu">
+                            {{range $slug, $name := .supported_langs}}
+                            <!-- .currentPath yerine $.currentPath yazıyoruz -->
+                            <a class="dropdown-item" href="/{{$slug}}" {{if eq $slug $.lang}}
+                                style="font-weight: bold; color: rgb(248,107,109)" {{end}}>
+
+                                {{$name}}
+
+                            </a>
+                            {{end}}
+                        </div>
+
+
+                    </div>
+
+
                     {{if eq .userid 0}}
-                    <a href="{{baseurl .slug "auth/login"}}"
+                    <a href='{{baseurl .slug "auth/login"}}'
                         class="header-button d-none d-sm-inline-block m-0 active">Login</a>
-                    <a href="/auth/register" class="header-button d-none d-sm-inline-block m-0">Register</a>
+                    <a href='{{baseurl .slug "auth/register"}}'
+                        class="header-button d-none d-sm-inline-block m-0">Register</a>
                     {{else}}
-                    <a href="{{baseurl .slug "panel"}}" class="header-button d-none d-sm-inline-block m-0">Panel</a>
+                    <a href='{{baseurl .slug "panel"}}' class="header-button d-none d-sm-inline-block m-0">Panel</a>
                     {{end}}
                 </div>
             </div>
@@ -166,9 +190,15 @@
     <!--============= Footer Section Ends Here =============-->
     {{end}}
 
-    <script src="/static/assets/js/jquery-3.3.1.min.js"></script>
     <script src="/static/assets/js/modernizr-3.6.0.min.js"></script>
     <script src="/static/assets/js/plugins.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+
     <script src="/static/assets/js/bootstrap.min.js"></script>
     <script src="/static/assets/js/wow.min.js"></script>
     <script src="/static/assets/js/waypoints.js"></script>
@@ -186,8 +216,5 @@
         data-cf-beacon='{"version":"2024.11.0","token":"6e6444122ed94892b6dff27396bb5627","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
         crossorigin="anonymous"></script>
 </body>
-
-
-<!-- Mirrored from pixner.net/cortaly/main/sign-in.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 01 May 2026 15:10:46 GMT -->
 
 </html>

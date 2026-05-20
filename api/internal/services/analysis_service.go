@@ -34,10 +34,6 @@ func (s *analysisService) GetURLStats(userID int, request dto.UsageAnalysisReque
 		return nil, errors.New("hata oluştu")
 	}
 
-	if res == nil {
-		return nil, errors.New("veri yok")
-	}
-
 	return res, nil
 }
 

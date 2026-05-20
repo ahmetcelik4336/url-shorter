@@ -1,0 +1,28 @@
+<div class="" style="margin-top: 150px">
+    <div class="mx-auto" style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
+        <div id="menus"
+            style="display: flex;flex-direction: row;gap: 10px;justify-content: center;;align-items: center;">
+            {{range $key, $name := .menus}}
+                {{if ne $name.Key "logout"}}
+                <a class="bg-light mr-2 p-2 rounded" href="{{$name.Url}}" {{if eq $name.Key $.active}}
+                    style="font-weight: bold; color: rgb(248,107,109);" {{end}}>
+                    {{$name.Title}}
+                </a>
+                {{end}}
+            {{end}}
+        </div>
+        <div id="user-info">
+            {{.user.Name}}
+
+            {{range $key, $name := .menus}}
+                {{if eq $name.Key "logout"}}
+                <a class="bg-light ml-2 p-2 rounded" href="{{$name.Url}}" {{if eq $name.Key $.active}}
+                    style="font-weight: bold; color: rgb(248,107,109);" {{end}}>
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+                {{end}}
+            {{end}}
+
+        </div>
+    </div>
+</div>

@@ -1,7 +1,10 @@
 package dto
 
+import "time"
+
 type UsageAnalysisRequest struct {
-	Date string `json:"date"`
+	Start time.Time `json:"start,omitempty" form:"start"`
+	End   time.Time `json:"end,omitempty" form:"end"`
 }
 
 type UrlCountAnalysisRequest struct {

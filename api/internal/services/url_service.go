@@ -4,7 +4,7 @@ import (
 	"api/ent"
 	"api/internal/repositories"
 	"errors"
-	"net/url"
+	netURL "net/url"
 	dto "shared/models"
 	"shared/utils"
 	"strings"
@@ -13,11 +13,13 @@ import (
 
 type UrlService interface {
 	FindByShortCode(shortcode string) (*ent.Url, error)
-	Create(userID int, req dto.CreateUrlRequest) (*dto.UrlResponse, error)
+	Create(userID int, req dto.CreateUrlRequest) (*dto.GeneralResponse[any], error)
 	History(userID int) ([]*dto.UrlResponse, error)
-	Update(req dto.UpdateUrlRequest) (*dto.UrlResponse, error)
+	Update(req dto.UpdateUrlRequest) (*dto.GeneralResponse[any], error)
 	Redirect(shortcodeOrAlias, password string) (*dto.GeneralResponse[dto.UrlResponse], error)
 	Bulkcreate(userID int, req []dto.CreateUrlRequest) (*dto.GeneralResponse[dto.UrlResponse], error)
+	HistoryById(userID int, id int) (*dto.UrlResponse, error)
+	//FindByAlias(alias string) (*dto.GeneralResponse[any], error)
 }
 
 type urlService struct {
@@ -28,6 +30,19 @@ func NewUrlService(r repositories.UrlRepository) UrlService {
 	return &urlService{repo: r}
 }
 
+/*
+func (s *urlService) FindByAlias(alias string) (*dto.GeneralResponse[any], error) {
+
+		urlResultt, _ := s.repo.FindByAlias(alias)
+		if urlResultt.ID > 0 {
+			return &dto.GeneralResponse[any]{
+				Status:  false,
+				Message: "Takma ad kayıtlı. Başka bir takma ad seçmelisiniz!",
+			}, nil
+		}
+		return nil, nil
+	}
+*/
 func (s *urlService) FindByShortCode(shortcode string) (*ent.Url, error) {
 
 	url, err := s.repo.FindByShortCode(shortcode)
@@ -38,9 +53,9 @@ func (s *urlService) FindByShortCode(shortcode string) (*ent.Url, error) {
 	return url, nil
 }
 
-func (s *urlService) Create(userID int, req dto.CreateUrlRequest) (*dto.UrlResponse, error) {
+func (s *urlService) Create(userID int, req dto.CreateUrlRequest) (*dto.GeneralResponse[any], error) {
 	// 1. URL formatını kontrol et
-	u, err := url.ParseRequestURI(req.LongUrl) // req içindeki alan adının LongURL olduğunu varsayıyorum
+	u, err := netURL.ParseRequestURI(req.LongUrl) // req içindeki alan adının LongURL olduğunu varsayıyorum
 	if err != nil {
 		return nil, errors.New("geçersiz URL formatı")
 	}
@@ -54,7 +69,37 @@ func (s *urlService) Create(userID int, req dto.CreateUrlRequest) (*dto.UrlRespo
 	if u.Host == "" || !strings.Contains(u.Host, ".") {
 		return nil, errors.New("geçersiz alan adı")
 	}
-	post, err := s.repo.Create(userID, utils.GenerateShortID(5), req)
+
+	if req.Alias != "" {
+		urll, err := s.repo.FindByAlias(req.Alias)
+		if err == nil && urll != nil {
+			return nil, errors.New("Takma ad kayıtlı. Başka bir takma ad seçmelisiniz!")
+		}
+	}
+
+	urlResult, err := s.repo.Create(userID, utils.GenerateShortID(5), req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.GeneralResponse[any]{
+		Status: urlResult.ShortCode != "",
+	}, nil
+}
+
+func (s *urlService) History(userID int) ([]*dto.UrlResponse, error) {
+
+	urll, err := s.repo.History(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.ToUrlResponseList(urll), nil
+}
+
+func (s *urlService) HistoryById(userID int, id int) (*dto.UrlResponse, error) {
+
+	post, err := s.repo.HistoryById(userID, id)
 	if err != nil {
 		return nil, err
 	}
@@ -62,24 +107,23 @@ func (s *urlService) Create(userID int, req dto.CreateUrlRequest) (*dto.UrlRespo
 	return dto.ToUrlResponse(post), nil
 }
 
-func (s *urlService) History(userID int) ([]*dto.UrlResponse, error) {
+func (s *urlService) Update(req dto.UpdateUrlRequest) (*dto.GeneralResponse[any], error) {
 
-	post, err := s.repo.History(userID)
-	if err != nil {
-		return nil, err
+	if req.Alias != "" {
+		urll, err := s.repo.FindByAlias(req.Alias)
+		if err == nil && urll != nil {
+			return nil, errors.New("Takma ad kayıtlı. Başka bir takma ad seçmelisiniz!")
+		}
 	}
-
-	return dto.ToUrlResponseList(post), nil
-}
-
-func (s *urlService) Update(req dto.UpdateUrlRequest) (*dto.UrlResponse, error) {
 
 	post, err := s.repo.Update(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return dto.ToUrlResponse(post), nil
+	return &dto.GeneralResponse[any]{
+		Status: post.ShortCode != "",
+	}, nil
 }
 
 func (s *urlService) Bulkcreate(userID int, req []dto.CreateUrlRequest) (*dto.GeneralResponse[dto.UrlResponse], error) {
@@ -88,7 +132,7 @@ func (s *urlService) Bulkcreate(userID int, req []dto.CreateUrlRequest) (*dto.Ge
 	for _, item := range req {
 		// URL'yi temizle ve parse et
 		trimmedURL := strings.TrimSpace(item.LongUrl)
-		u, err := url.ParseRequestURI(trimmedURL)
+		u, err := netURL.ParseRequestURI(trimmedURL)
 
 		// Temel format kontrolü
 		if err != nil {
@@ -108,6 +152,13 @@ func (s *urlService) Bulkcreate(userID int, req []dto.CreateUrlRequest) (*dto.Ge
 		// Opsiyonel: ExpirationDate geçmişte mi kontrolü
 		if !item.ExpirationDate.IsZero() && item.ExpirationDate.Before(time.Now()) {
 			return nil, errors.New("son kullanma tarihi geçmiş olamaz: " + item.LongUrl)
+		}
+
+		if item.Alias != "" {
+			urll, err := s.repo.FindByAlias(item.Alias)
+			if err == nil && urll != nil {
+				return nil, errors.New("Takma ad kayıtlı. Başka bir takma ad seçmelisiniz!")
+			}
 		}
 	}
 	_, err := s.repo.CreateBulk(userID, req)
@@ -137,6 +188,7 @@ func (s *urlService) Redirect(shortcodeOrAlias, password string) (*dto.GeneralRe
 	}
 
 	// Süre kontrolü
+	// 1. Önce ExpirationDate'in nil olup olmadığını kontrol ediyoruz (yani tarihin set edilip edilmediğini)
 	if !url.ExpirationDate.IsZero() && time.Now().After(url.ExpirationDate) {
 		return &dto.GeneralResponse[dto.UrlResponse]{
 			Status:  false,

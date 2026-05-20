@@ -1,0 +1,66 @@
+<div class="container">
+    {{template "panel/menu.html" .}}
+
+    <di class="card my-3">
+        <div class="card-header" style="display: flex;justify-content: space-between;align-items: center;">
+            <b>Urls</b>
+            <div class="">
+                <button data-href='{{baseurl .lang "panel/urls/add"}}' class="btn btn-success add btn-sm">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div style="text-align: center;color: red;">
+                {{.err}}
+            </div>
+            <div class="text-success text-center">
+                {{.success}}
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Kod</th>
+                            <th>Hedef</th>
+                            <th>Tarih</th>
+                            <th>Takma Ad</th>
+                            <th>Şifre Durumu</th>
+                            <th>Sonlanma Tarihi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range $key, $url := .urls}}
+                        <tr>
+                            <td>{{$url.ShortCode}}</td>
+                            <td>{{$url.LongUrl}}</td>
+                            <td>{{$url.CreateAt}}</td>
+                            <td>{{$url.Alias}}</td>
+                            <td>{{$url.IsEncryptedText}}</td>
+                            <td>{{$url.ExpirationDate}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </di>
+
+</div>
+<div class="modal fade" id="addmodal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.add').click(function () {
+            $.post(this.dataset.href, {}, function (res) {
+                $('#addmodal .modal-content').html(res)
+                $('#addmodal').modal("show")
+            })
+        })
+    })
+</script>

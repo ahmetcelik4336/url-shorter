@@ -4,18 +4,14 @@
         {
             "label": "api",
             "type": "shell",
-            "command": "bee run",
-            "options": { "cwd": "${workspaceFolder}/api" },
-            "isBackground": true,
-            "problemMatcher": ["$go"]
+            "command": "cd api ; air",
+            "isBackground": true
         },
         {
             "label": "client_",
             "type": "shell",
-            "command": "bee run",
-            "options": { "cwd": "${workspaceFolder}/client_" },
-            "isBackground": true,
-            "problemMatcher": ["$go"]
-        }
+            "command": "cd client_ ; air",
+            "isBackground": true
+        },
     ]
 }

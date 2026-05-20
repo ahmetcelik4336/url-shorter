@@ -4,6 +4,7 @@ import (
 	"api/internal/services"
 	"encoding/json"
 	dto "shared/models"
+	"strconv"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -28,12 +29,16 @@ func (c *UrlController) Create() {
 		return
 	}
 
-	user, err := c.Service.Create(c.Ctx.Input.GetData("userID").(int), req)
+	urlResult, err := c.Service.Create(c.Ctx.Input.GetData("userID").(int), req)
 	if err != nil {
-		c.CustomAbort(500, "Url oluşturulurken hata oluştu")
+		c.Data["json"] = dto.GeneralResponse[any]{
+			Status:  false,
+			Message: err.Error(),
+		}
+		c.ServeJSON()
 		return
 	}
-	c.Data["json"] = user
+	c.Data["json"] = urlResult
 	c.ServeJSON()
 }
 
@@ -45,6 +50,18 @@ func (c *UrlController) Create() {
 // @Router /panel/history [get]
 func (c *UrlController) History() {
 	urls, err := c.Service.History(c.Ctx.Input.GetData("userID").(int))
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+		return
+	}
+	c.Data["json"] = urls
+	c.ServeJSON()
+}
+
+func (c *UrlController) HistoryById() {
+	id := c.Ctx.Input.Param(":id")
+	num, err := strconv.Atoi(id)
+	urls, err := c.Service.HistoryById(c.Ctx.Input.GetData("userID").(int), num)
 	if err != nil {
 		c.CustomAbort(500, err.Error())
 		return
@@ -69,7 +86,11 @@ func (c *UrlController) Update() {
 
 	user, err := c.Service.Update(req)
 	if err != nil {
-		c.CustomAbort(500, "Url oluşturulurken hata oluştu")
+		c.Data["json"] = dto.GeneralResponse[any]{
+			Status:  false,
+			Message: err.Error(),
+		}
+		c.ServeJSON()
 		return
 	}
 	c.Data["json"] = user
@@ -96,7 +117,11 @@ func (c *UrlController) Bulkcreate() {
 
 	user, err := c.Service.Bulkcreate(c.Ctx.Input.GetData("userID").(int), req)
 	if err != nil {
-		c.CustomAbort(500, err.Error())
+		c.Data["json"] = dto.GeneralResponse[any]{
+			Status:  false,
+			Message: err.Error(),
+		}
+		c.ServeJSON()
 		return
 	}
 	c.Data["json"] = user

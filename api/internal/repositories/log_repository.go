@@ -38,12 +38,12 @@ func (r *logRepository) GetPerDayClick() (float64, error) {
 
 			dialectHandler := db.GetDialect(r.dailect)
 			dateExpr := dialectHandler.FormatDate(logs.FieldCreatedAt)
-
+			groupByExpr := dialectHandler.GroupByDate(logs.FieldCreatedAt)
 			s.Select(
 				sql.As(dateExpr, "date"),
 				sql.As("COUNT(*)", "count"),
 			).
-				GroupBy("DATE(created_at)").
+				GroupBy(groupByExpr).
 				OrderBy(sql.Desc("date"))
 		}).
 		Scan(context.Background(), &v)

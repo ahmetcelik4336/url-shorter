@@ -4,7 +4,6 @@ import (
 	"os"
 	dto "shared/models"
 	"shared/utils"
-	"strconv"
 
 	"github.com/beego/beego/v2/server/web/context"
 )
@@ -23,7 +22,7 @@ func PanelFilter(ctx *context.Context) {
 	tokenn, _ := token.(string)
 
 	apiResp, err := utils.SendRequest[*dto.UserResponse](nil, "user/ValidateToken", "POST", ctx, tokenn)
-	if err != nil || strconv.Itoa(apiResp.Id) == "" {
+	if err != nil || apiResp == nil {
 		ctx.Redirect(302, "/"+lang+"/auth/login")
 		return
 	}

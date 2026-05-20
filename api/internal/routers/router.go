@@ -41,6 +41,10 @@ func Init(c *container.Container) {
 		Service: c.UrlService,
 	}, "get:History")
 
+	beego.Router("/v1/panel/historybyid/?:id", &controllers.UrlController{
+		Service: c.UrlService,
+	}, "get:HistoryById")
+
 	beego.Router("/v1/panel/update", &controllers.UrlController{
 		Service: c.UrlService,
 	}, "put:Update")

@@ -1,0 +1,18 @@
+<input type="hidden" name="captcha_id" value="{{.captchaId}}">
+
+<div style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
+    <img src="/captcha/{{.captchaId}}.png" alt="Captcha" id="captcha_img">
+    <a onclick="reloadCaptcha()">Yenile</a>
+    <div>
+        <input type="text" name="captcha_value" id="captcha_value" required placeholder="Resimdeki kodu giriniz">
+    </div>
+</div>
+
+<script>
+    // Sayfa yenilenmeden captcha resmini değiştirmek için basit JS
+    function reloadCaptcha() {
+        var img = document.getElementById('captcha_img');
+        // Cache'lenmeyi önlemek için arkasına rastgele bir sayı ekliyoruz
+        img.src = img.src.split('?')[0] + '?reload=' + Math.random();
+    }
+</script>

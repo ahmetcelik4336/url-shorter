@@ -10,7 +10,7 @@
         </div>
         <div class="account-wrapper">
             <div class="account-body">
-                <h4 class="title mb-20">Welcome To {{.conf.AppName}}</h4>
+                <h4 class="title mb-20"> {{i18n .lang "welcome" .conf.AppName}}</h4>
                 <form class="account-form" method="POST" action="{{baseurl .slug "auth/login"}}">
                    <div style="text-align: center;color: red;">
                     {{.Message}}
@@ -38,19 +38,22 @@
                             {{index .Errors "Password"}}
                         </div>
                         {{end}}
-                        <span class="sign-in-recovery">Forgot your password? <a href="#0">recover password</a></span>
                     </div>
+
+                    <div class="form-group">
+                        {{template "inc/captcha.html" .}}
+                    </div>
+
+                    <span class="sign-in-recovery">Forgot your password? <a href="#0">recover password</a></span>
+
 
                     <div class="form-group text-center">
                         <button type="submit" class="mt-2 mb-2">Sign In</button>
                     </div>
                 </form>
             </div>
-            <div class="or">
-                <span>OR</span>
-            </div>
+           
             <div class="account-header pb-0">
-                <span class="d-block mb-30 mt-2">Sign up with your work email</span>
                 <span class="d-block mt-15">Don't have an account? <a href="{{baseurl .slug "auth/register"}}">Sign Up Here</a></span>
             </div>
         </div>

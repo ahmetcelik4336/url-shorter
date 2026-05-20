@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
+	"shared/helpers"
 	dto "shared/models"
 	"shared/utils"
 	"shared/validator"
@@ -20,6 +22,16 @@ func (c *AuthController) Login() {
 		c.Data["SuccessMessage"] = success
 	}
 
+	if success, ok := flash.Data["errmessage"]; ok {
+		c.Data["Message"] = success
+	}
+
+	id, err := Cpt.CreateCaptcha()
+	if err != nil {
+		log.Println("Captcha oluşturma hatası:", err)
+	}
+
+	c.Data["captchaId"] = id
 	c.Data["IsShowHeader"] = ""
 	c.Data["IsShowFooter"] = ""
 	c.Layout = "inc/layout.html"
@@ -41,11 +53,24 @@ func (c *AuthController) LoginHandler() {
 		return
 	}
 
+	captchaId := c.GetString("captcha_id")
+	userInput := c.GetString("captcha_value")
+
 	langVal := c.Ctx.Input.GetData("lang")
 	lang, ok := langVal.(string)
 	if !ok || lang == "" {
 		lang = "en"
 	}
+
+	// Doğrulama kontrolü
+	if !Cpt.Verify(captchaId, userInput) {
+		flash := beego.NewFlash()
+		flash.Data["errmessage"] = "Doğrulama Hatalı!"
+		flash.Store(&c.Controller)
+		c.Redirect(helpers.Baseurl(lang, "auth/login"), 302)
+		return
+	}
+
 	if resp := validator.CheckStruct(req, lang); resp != nil {
 		c.Data["IsShowHeader"] = ""
 		c.Data["IsShowFooter"] = ""
@@ -61,7 +86,7 @@ func (c *AuthController) LoginHandler() {
 
 	if apiResp.Token != "" {
 		c.SetSession("token", apiResp.Token)
-		c.Redirect("/", 302)
+		c.Redirect(helpers.Baseurl(lang, "panel"), 302)
 		return
 	}
 
@@ -103,7 +128,7 @@ func (c *AuthController) RegisterHandler() {
 		flash := beego.NewFlash()
 		flash.Data["success"] = "Kayıt başarılı"
 		flash.Store(&c.Controller)
-		c.Redirect("/auth/login", 302)
+		c.Redirect(helpers.Baseurl(lang, "auth/login"), 302)
 		return
 	}
 

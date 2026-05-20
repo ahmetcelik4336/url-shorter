@@ -29,6 +29,9 @@ func init() {
 
 		beego.NSNamespace("/panel",
 			beego.NSRouter("/", &controllers.PanelController{}, "get:Panel"),
+			beego.NSRouter("/urls/?:id", &controllers.PanelController{}, "get:Url;delete:UrlDelete"),
+			beego.NSRouter("/urls/add/?:id", &controllers.PanelController{}, "post:UrlAdd"),
+			beego.NSRouter("/urls/save/?:id", &controllers.PanelController{}, "post:UrlSaveHandler"),
 		),
 	)
 
@@ -44,4 +47,13 @@ func init() {
 		}
 		ctx.Redirect(302, "/"+lang)
 	})
+
+	beego.Get("/captcha/*.png", func(ctx *context.Context) {
+		controllers.Cpt.Handler(ctx)
+	})
+
+	beego.Get("/captcha/refresh", func(ctx *context.Context) {
+		controllers.Cpt.Handler(ctx)
+	})
+
 }

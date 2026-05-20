@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -72,17 +73,19 @@ func SendRequest[T any](req any, path, method string, ctx *context.Context, toke
 		return res, err
 	}
 	defer resp.Body.Close()
-	//bodyBytes, _ := io.ReadAll(resp.Body)
+
 	//fmt.Println("Gelen Ham Veri:", string(bodyBytes))
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return res, fmt.Errorf("API hatası! Status: %d", resp.StatusCode)
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		log.Println("hata", string(bodyBytes))
+		return res, fmt.Errorf("API hatası! Status")
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
-		return res, fmt.Errorf("decode error: %v", err)
+		//return res, fmt.Errorf("decode error: %v", err)
 	}
-
+	//log.Println(string(bodyBytes))
 	return res, nil
 }

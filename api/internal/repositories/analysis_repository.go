@@ -61,18 +61,17 @@ func (r *analysisRepository) GetURLStats(userID int, request dto.UsageAnalysisRe
 	q := r.db.Url.Query().
 		Where(url.HasUserWith(user.IDEQ(userID)))
 
-	if request.Date != "" {
-		start, end := utils.GenerateDates(request.Date)
+	if !request.Start.IsZero() {
 		q = q.Where(
-			url.CreatedAtGTE(start),
-			url.CreatedAtLTE(end),
+			url.CreatedAtGTE(request.Start),
 		)
 	}
 
-	/*err := q.
-	GroupBy(url.FieldCreatedAt). // Bu ham tarih bazlı gruplar
-	Aggregate(ent.Count()).      // Count(*) ekler
-	Scan(context.Background(), &v)*/
+	if !request.End.IsZero() {
+		q = q.Where(
+			url.CreatedAtLTE(request.End),
+		)
+	}
 
 	err := q.Modify(func(s *sql.Selector) {
 

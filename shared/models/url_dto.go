@@ -3,22 +3,29 @@ package dto
 import "time"
 
 type UrlResponse struct {
-	Id        int    `json:"id,omitempty"`
-	ShortCode string `json:"short_code,omitempty"`
-	LongUrl   string `json:"long_url,omitempty"`
-	CreateAt  string `json:"created_at,omitempty"`
+	Id              int    `json:"id,omitempty"`
+	ShortCode       string `json:"short_code,omitempty"`
+	LongUrl         string `json:"long_url,omitempty"`
+	CreateAt        string `json:"created_at,omitempty"`
+	Alias           string `json:"alias,omitempty"`
+	IsEncrypted     bool   `json:"is_encrypted,omitempty"`
+	IsEncryptedText string `json:"is_encrypted_text,omitempty"`
+	ExpirationDate  string `json:"expiration_date"`
 }
 
 type CreateUrlRequest struct {
-	LongUrl        string    `json:"long_url"`
-	Alias          string    `json:"alias"`
-	Password       string    `json:"password"`
-	ExpirationDate time.Time `json:"expiration_date"`
+	LongUrl        string    `json:"long_url" form:"url"`
+	Alias          string    `json:"alias,omitempty" form:"alias"`
+	Password       string    `json:"password,omitempty" form:"password"`
+	ExpirationDate time.Time `json:"expiration_date,omitempty" form:"expiration"`
 }
 
 type UpdateUrlRequest struct {
-	LongUrl string `json:"long_url"`
-	ID      int    `json:"id"`
+	ID             int       // Bir önceki adımda parse ettiğiniz id
+	LongUrl        string    `json:"long_url" form:"url"`
+	Alias          string    `json:"alias,omitempty" form:"alias"`
+	Password       string    `json:"password,omitempty" form:"password"`
+	ExpirationDate time.Time `json:"expiration_date,omitempty" form:"expiration"`
 }
 
 type UrlConfig struct {
