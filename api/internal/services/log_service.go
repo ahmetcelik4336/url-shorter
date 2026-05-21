@@ -34,7 +34,7 @@ func (s *logService) Create(urlId int, request dto.LogRequest) (*ent.Logs, error
 
 	log, err := s.repo.Create(urlId, request)
 	if err != nil {
-		return nil, errors.New("hata oluştu")
+		return nil, errors.New(err.Error())
 	}
 
 	return log, nil

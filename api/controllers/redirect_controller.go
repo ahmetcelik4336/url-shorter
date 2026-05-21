@@ -24,21 +24,34 @@ type RedirectController struct {
 func (c *RedirectController) Redirect() {
 
 	shortcode := c.Ctx.Input.Param(":shortcode")
-	password := c.Ctx.Input.Header("password")
+	password := c.Ctx.Input.Param(":password")
 	response, err := c.Service.Redirect(shortcode, password)
-	if err != nil {
-		c.CustomAbort(500, err.Error())
+	if err != nil || response.Code != 200 {
+		c.Data["json"] = dto.GeneralResponse[any]{
+			Message: response.Message,
+			Status:  false,
+		}
+		c.ServeJSON()
 		return
 	}
 
 	if response.Code == 200 {
 		var req dto.LogRequest
 		if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
-			c.CustomAbort(400, err.Error())
+			c.Data["json"] = dto.GeneralResponse[any]{
+				Message: "Hata oluştu!",
+			}
 			return
 		}
-		c.LogService.Create(response.Data.Id, req)
-		c.Data["json"] = response.Data
+		_, err := c.LogService.Create(response.Data.Id, req)
+		if err == nil {
+			c.Data["json"] = response
+		} else {
+			c.Data["json"] = dto.GeneralResponse[any]{
+				Message: "Hata oluştu!",
+			}
+		}
+
 		c.ServeJSON()
 		//c.Ctx.Redirect(http.StatusFound, response.Data.LongUrl)
 		return

@@ -7,6 +7,7 @@ import (
 	dto "shared/models"
 	"shared/utils"
 	"strconv"
+	"unicode/utf8"
 
 	beego "github.com/beego/beego/v2/server/web"
 	"github.com/beego/i18n"
@@ -48,7 +49,7 @@ func (c *BaseController) Prepare() {
 	languagesMap, _ := beego.AppConfig.GetSection("languages")
 	c.Data["supported_langs"] = languagesMap
 
-	if languagesMap[langStr] == "" {
+	if languagesMap[langStr] == "" && utf8.RuneCountInString(langStr) == 2 {
 		c.Redirect(helpers.Baseurl(defaultLang, ""), 302)
 	}
 

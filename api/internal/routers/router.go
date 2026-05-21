@@ -16,7 +16,7 @@ func Init(c *container.Container) {
 
 	beego.SetStaticPath("/swagger", "swagger")
 
-	beego.Router("/v1/url/:shortcode", &controllers.RedirectController{
+	beego.Router("/v1/url/:shortcode/?:password", &controllers.RedirectController{
 		Service:    c.UrlService,
 		LogService: c.LogService,
 	}, "post:Redirect")

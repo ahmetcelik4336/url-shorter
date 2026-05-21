@@ -109,11 +109,13 @@ func (c *UrlController) Update() {
 func (c *UrlController) Bulkcreate() {
 	var req []dto.CreateUrlRequest
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
-		c.CustomAbort(400, err.Error())
+		c.Data["json"] = dto.GeneralResponse[any]{
+			Status:  false,
+			Message: err.Error(),
+		}
+		c.ServeJSON()
 		return
 	}
-
-	// 2026-06-01T10:00:00Z
 
 	user, err := c.Service.Bulkcreate(c.Ctx.Input.GetData("userID").(int), req)
 	if err != nil {

@@ -110,7 +110,7 @@ func (s *urlService) HistoryById(userID int, id int) (*dto.UrlResponse, error) {
 func (s *urlService) Update(req dto.UpdateUrlRequest) (*dto.GeneralResponse[any], error) {
 
 	if req.Alias != "" {
-		urll, err := s.repo.FindByAlias(req.Alias)
+		urll, err := s.repo.FindByAliasWithId(req.ID, req.Alias)
 		if err == nil && urll != nil {
 			return nil, errors.New("Takma ad kayıtlı. Başka bir takma ad seçmelisiniz!")
 		}
@@ -157,9 +157,10 @@ func (s *urlService) Bulkcreate(userID int, req []dto.CreateUrlRequest) (*dto.Ge
 		if item.Alias != "" {
 			urll, err := s.repo.FindByAlias(item.Alias)
 			if err == nil && urll != nil {
-				return nil, errors.New("Takma ad kayıtlı. Başka bir takma ad seçmelisiniz!")
+				return nil, errors.New("Takma ad kayıtlı. Başka bir takma ad seçmelisiniz! Takma ad: " + item.Alias)
 			}
 		}
+
 	}
 	_, err := s.repo.CreateBulk(userID, req)
 	if err != nil {

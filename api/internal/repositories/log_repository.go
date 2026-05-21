@@ -4,6 +4,7 @@ import (
 	"context"
 	"shared/db"
 	dto "shared/models"
+	"time"
 
 	"api/ent"
 	"api/ent/logs"
@@ -71,5 +72,6 @@ func (r *logRepository) Create(urlId int, request dto.LogRequest) (*ent.Logs, er
 		SetIP(request.Ip).
 		SetReferer(request.Referer).
 		SetLogID(urlId).
+		SetCreatedAt(time.Now()).
 		Save(context.Background())
 }

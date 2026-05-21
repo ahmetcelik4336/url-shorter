@@ -21,6 +21,7 @@ type UrlRepository interface {
 	FindByPassword(id int, password string) (*ent.Url, error)
 	CreateBulk(userID int, inputs []dto.CreateUrlRequest) ([]*ent.Url, error)
 	FindByAlias(alias string) (*ent.Url, error)
+	FindByAliasWithId(id int, alias string) (*ent.Url, error)
 }
 
 type urlRepository struct {
@@ -49,6 +50,15 @@ func (r *urlRepository) FindByAlias(alias string) (*ent.Url, error) {
 	return r.db.Url.
 		Query().
 		Where(url.AliasEQ(alias)).
+		First(context.Background())
+}
+
+func (r *urlRepository) FindByAliasWithId(id int, alias string) (*ent.Url, error) {
+
+	return r.db.Url.
+		Query().
+		Where(url.AliasEQ(alias)).
+		Where(url.IDNEQ(id)).
 		First(context.Background())
 }
 
@@ -152,7 +162,7 @@ func (r *urlRepository) FindShortCodeOrAlias(shortcodeOrAlias string) (*ent.Url,
 				url.AliasEQ(shortcodeOrAlias),
 			),
 		).
-		Only(context.Background())
+		First(context.Background())
 }
 func (r *urlRepository) FindByPassword(id int, password string) (*ent.Url, error) {
 	return r.db.Url.

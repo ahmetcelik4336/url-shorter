@@ -30,12 +30,15 @@ func init() {
 		beego.NSNamespace("/panel",
 			beego.NSRouter("/", &controllers.PanelController{}, "get:Panel"),
 			beego.NSRouter("/urls/?:id", &controllers.PanelController{}, "get:Url;delete:UrlDelete"),
-			beego.NSRouter("/urls/add/?:id", &controllers.PanelController{}, "post:UrlAdd"),
+			beego.NSRouter("/urls/add/?:id", &controllers.PanelController{}, "get:UrlAdd"),
 			beego.NSRouter("/urls/save/?:id", &controllers.PanelController{}, "post:UrlSaveHandler"),
+			beego.NSRouter("/urls/batch", &controllers.PanelController{}, "post:BatchExcel"),
+			beego.NSRouter("/urls/download", &controllers.PanelController{}, "get:DownloadTemplate"),
 		),
 	)
-
 	beego.AddNamespace(ns)
+
+	beego.Router("/url/:shortcode/?:password", &controllers.RedirectController{}, "get:Redirect")
 
 	beego.InsertFilter("/:lang/panel/*", beego.BeforeRouter, middleware.PanelFilter)
 	beego.InsertFilter("/:lang/panel", beego.BeforeRouter, middleware.PanelFilter)
