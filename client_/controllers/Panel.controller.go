@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"shared/helpers"
@@ -14,6 +14,7 @@ import (
 	"time"
 
 	beego "github.com/beego/beego/v2/server/web"
+	"github.com/skip2/go-qrcode"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -71,8 +72,7 @@ func (c *PanelController) UrlAdd() {
 	c.Data["action"] = "panel/urls/save"
 	c.Data["urls"] = nil
 	if id != "" {
-		urls, err := utils.SendRequest[dto.UrlResponse](nil, "panel/historybyid/"+id, "GET", c.Ctx, tokenn)
-		log.Println("hhh", err)
+		urls, _ := utils.SendRequest[dto.UrlResponse](nil, "panel/historybyid/"+id, "GET", c.Ctx, tokenn)
 		c.Data["urls"] = urls
 		c.Data["action"] = "panel/urls/save/" + id
 	}
@@ -123,6 +123,12 @@ func (c *PanelController) UrlSaveHandler() {
 }
 
 func (c *PanelController) UrlDelete() {
+	id := c.Ctx.Input.Param(":id")
+	token := c.Ctx.Input.GetData("token")
+	tokenn := token.(string)
+	status, _ := utils.SendRequest[dto.GeneralResponse[any]](nil, "panel/delete/"+id, "DELETE", c.Ctx, tokenn)
+	c.Data["json"] = status
+	c.ServeJSON()
 
 }
 
@@ -247,4 +253,73 @@ func (c *PanelController) DownloadTemplate() {
 	// İlk parametre: Dosyanın sunucudaki yolu
 	// İkinci parametre (Opsiyonel): Kullanıcının bilgisayarına inerken görünecek dosya adı
 	c.Ctx.Output.Download(filePath, "url_toplu_yukleme_taslagi.xlsx")
+}
+func (c *PanelController) Qr() {
+	id := c.Ctx.Input.Param(":id")
+	c.Data["id"] = id
+	c.Data["href"] = helpers.Baseurl(c.Data["slug"], "panel/urls/qrcreate/"+id)
+	c.Data["logohref"] = helpers.Baseurl(c.Data["slug"], "panel/urls/logoUpload")
+	c.TplName = "panel/url/qr.html"
+
+}
+func (c *PanelController) QrCreate() {
+	id := c.Ctx.Input.Param(":id")
+	token := c.Ctx.Input.GetData("token")
+	tokenn := token.(string)
+	resultUrl, _ := utils.SendRequest[dto.UrlResponse](nil, "panel/historybyid/"+id, "GET", c.Ctx, tokenn)
+	shortURL := helpers.GetShortUrl(resultUrl.Alias, resultUrl.Password, resultUrl.ShortCode, "qr")
+	var png []byte
+	png, err := qrcode.Encode(shortURL, qrcode.Highest, 400)
+	if err != nil {
+		c.Ctx.Output.SetStatus(500)
+		c.Ctx.WriteString("QR kod üretilemedi")
+		return
+	}
+
+	// Tarayıcıya bunun bir PNG resmi olduğunu söylüyoruz ve içeriği basıyoruz
+	c.Ctx.Output.Header("Content-Type", "image/png")
+	c.Ctx.Output.Header("Content-Length", fmt.Sprintf("%d", len(png)))
+	c.Ctx.Output.Body(png)
+}
+
+func (c *PanelController) UploadLogo() {
+	// 1. Formdan "logoUpload" isimli dosyayı yakala
+	file, header, err := c.GetFile("logoUpload")
+	if err != nil {
+		c.Data["json"] = map[string]interface{}{"success": false, "message": "Dosya alınamadı: " + err.Error()}
+		c.ServeJSON()
+		return
+	}
+	defer file.Close()
+
+	// 2. Dosya uzantısını kontrol et (Sadece PNG ve JPG/JPEG)
+	ext := strings.ToLower(filepath.Ext(header.Filename))
+	if ext != ".png" && ext != ".jpg" && ext != ".jpeg" {
+		c.Data["json"] = map[string]interface{}{"success": false, "message": "Sadece PNG, JPG veya JPEG formatında logolar yüklenebilir."}
+		c.ServeJSON()
+		return
+	}
+
+	// 3. Benzersiz bir dosya adı oluştur (Çakışmaları önlemek için MD5 + Timestamp)
+	hasher := md5.New()
+	hasher.Write([]byte(time.Now().String() + header.Filename))
+	fileName := fmt.Sprintf("%x%s", hasher.Sum(nil), ext)
+
+	// 4. Kaydedilecek hedef klasörü belirle (Klasörün var olduğundan emin ol)
+	uploadDir := "static/uploads/logos/"
+	uploadPath := filepath.Join(uploadDir, fileName)
+
+	// 5. Dosyayı sunucuya kaydet
+	err = c.SaveToFile("logoUpload", uploadPath)
+	if err != nil {
+		c.Data["json"] = map[string]interface{}{"success": false, "message": "Dosya kaydedilirken bir hata oluştu."}
+		c.ServeJSON()
+		return
+	}
+
+	// 6. Başarılı ise front-end'e dosya yolunu dön
+	// Dönen bu webPath'i istersen Ent ORM ile veri tabanındaki ilgili URL kaydına yazabilirsin.
+	webPath := "/" + uploadPath
+	c.Data["json"] = map[string]interface{}{"success": true, "logo_url": webPath, "message": "Logo başarıyla yüklendi."}
+	c.ServeJSON()
 }

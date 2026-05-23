@@ -129,3 +129,11 @@ func (c *UrlController) Bulkcreate() {
 	c.Data["json"] = user
 	c.ServeJSON()
 }
+
+func (c *UrlController) Delete() {
+	id := c.Ctx.Input.Param(":id")
+	num, _ := strconv.Atoi(id)
+	user, _ := c.Service.Delete(num)
+	c.Data["json"] = user
+	c.ServeJSON()
+}

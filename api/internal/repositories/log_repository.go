@@ -72,6 +72,7 @@ func (r *logRepository) Create(urlId int, request dto.LogRequest) (*ent.Logs, er
 		SetIP(request.Ip).
 		SetReferer(request.Referer).
 		SetLogID(urlId).
+		SetType(request.Type).
 		SetCreatedAt(time.Now()).
 		Save(context.Background())
 }

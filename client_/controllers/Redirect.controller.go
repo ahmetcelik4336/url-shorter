@@ -16,6 +16,7 @@ type RedirectController struct {
 }
 
 func (c *RedirectController) Redirect() {
+	type_ := c.Ctx.Input.Param(":type")
 	shortcode := c.Ctx.Input.Param(":shortcode")
 	password := c.Ctx.Input.Param(":password")
 
@@ -36,6 +37,7 @@ func (c *RedirectController) Redirect() {
 	var request dto.LogRequest
 	request.Device = fullDeviceName
 	request.Ip = ipAddress
+	request.Type = type_
 	request.Referer = referer // Kullanıcı buraya nereden geldi? (Örn: twitter.com, google.com)
 
 	// İsteği gönder

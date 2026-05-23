@@ -1,0 +1,220 @@
+<div class="modal-header w-100" style="display: flex;justify-content: space-between;align-items: center;">
+    <h5 class="modal-title">QR Tasarım Alanı</h5>
+    <span type="button" class="close btn btn-sm" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </span>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="controls col-12 col-lg-6">
+
+            <div class="control-group mb-3">
+                <label class="form-label">QR Piksel Rengi (Foreground):</label>
+                <input type="color" id="fgColor" class="form-control form-control-color" value="#1a237e">
+            </div>
+
+            <div class="control-group mb-3">
+                <label class="form-label">Arka Plan Rengi (Background):</label>
+                <input type="color" id="bgColor" class="form-control form-control-color" value="#ffffff">
+            </div>
+
+            <div class="control-group mb-3">
+                <label class="form-label">Alt Yazı:</label>
+                <input type="text" id="qrText" class="form-control" placeholder="Örn: TARAT VE GİT" maxlength="20">
+            </div>
+
+            <div class="control-group mb-3">
+                <label class="form-label">Yazı Rengi:</label>
+                <input type="color" id="textColor" class="form-control form-control-color" value="#1a237e">
+            </div>
+
+            <div class="control-group mb-3">
+                <label class="form-label">Logo Yükle (PNG):</label>
+                <input type="file" id="logoUpload" class="form-control" accept="image/png, image/jpeg">
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button id="downloadBtn" class="btn btn-outline-secondary">QR Kodu İndir</button>
+            </div>
+        </div>
+
+        <!-- Canlı Önizleme Alanı -->
+        <div class="preview-area col-12 col-lg-6 d-flex justify-content-center align-items-center mt-3 mt-lg-0">
+            <canvas id="qrCanvas" width="400" height="460" style="max-width: 100%; height: auto; border: 1px solid #dee2e6; border-radius: 4px;"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    var canvas = document.getElementById('qrCanvas');
+    var ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    // Elementleri yakala
+    var fgColorInput = document.getElementById('fgColor');
+    var bgColorInput = document.getElementById('bgColor');
+    var qrTextInput = document.getElementById('qrText');
+    var textColorInput = document.getElementById('textColor');
+    var logoUpload = document.getElementById('logoUpload');
+    var downloadBtn = document.getElementById('downloadBtn');
+    var saveQrBtn = document.getElementById('saveQrBtn');
+
+    // Hafızada tutulacak görseller
+    var baseQRImage = new Image();
+    var logoImage = null;
+
+    // CORS Güvenlik Ayarı (Canvas'ın kilitlenmesini önler)
+    baseQRImage.crossOrigin = "anonymous";
+    baseQRImage.src = '{{.href}}';
+
+    // QR kod sunucudan yüklenince ilk çizimi yap
+    baseQRImage.onload = () => {
+        drawQR();
+    };
+
+    // Kullanıcı logoyu seçtiğinde önizleme için hafızaya al
+    logoUpload.addEventListener('change', (e) => {
+        let file = e.target.files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = (event) => {
+                logoImage = new Image();
+                logoImage.src = event.target.result;
+                logoImage.onload = () => drawQR();
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Girişler değiştikçe anlık olarak canvas'ı yeniden çiz
+    [fgColorInput, bgColorInput, qrTextInput, textColorInput].forEach(input => {
+        input.addEventListener('input', drawQR);
+    });
+
+    // Hex rengini RGB formatına çeviren yardımcı fonksiyon
+    function hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : { r: 0, g: 0, b: 0 };
+    }
+
+    // ANA ÇİZİM FONKSİYONU
+    function drawQR() {
+        if (!baseQRImage.complete) return;
+
+        let width = canvas.width;
+        let height = width;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(baseQRImage, 0, 0, width, height);
+
+        let targetFg = hexToRgb(fgColorInput.value);
+        let targetBg = hexToRgb(bgColorInput.value);
+
+        let imgData = ctx.getImageData(0, 0, width, height);
+        let data = imgData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            let r = data[i];
+            let g = data[i + 1];
+            let b = data[i + 2];
+
+            let brightness = (r + g + b) / 3;
+
+            if (brightness < 128) {
+                data[i] = targetFg.r;
+                data[i + 1] = targetFg.g;
+                data[i + 2] = targetFg.b;
+            } else {
+                data[i] = targetBg.r;
+                data[i + 1] = targetBg.g;
+                data[i + 2] = targetBg.b;
+            }
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        ctx.fillStyle = bgColorInput.value;
+        ctx.fillRect(0, height, width, canvas.height - height);
+
+        if (logoImage) {
+            let logoSize = width * 0.18;
+            let logoX = (width - logoSize) / 2;
+            let logoY = (height - logoSize) / 2;
+
+            ctx.fillStyle = bgColorInput.value;
+            ctx.fillRect(logoX - 4, logoY - 4, logoSize + 8, logoSize + 8);
+
+            ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+        }
+
+        let text = qrTextInput.value.toUpperCase();
+        if (text) {
+            ctx.fillStyle = textColorInput.value;
+            ctx.font = "bold 22px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(text, width / 2, height + 30);
+        }
+    }
+
+    // İNDİRME İŞLEMİ
+    downloadBtn.addEventListener('click', () => {
+        let link = document.createElement('a');
+        link.download = 'url-min-qr.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+
+    // BEEGO BACKEND'İNE LOGO VE TASARIM VERİLERİNİ GÖNDERME
+    saveQrBtn.addEventListener('click', function() {
+        let logoFile = logoUpload.files[0];
+        let formData = new FormData();
+
+        // Tasarım parametrelerini de backend'e form datası olarak ekliyoruz
+        formData.append('fg_color', fgColorInput.value);
+        formData.append('bg_color', bgColorInput.value);
+        formData.append('qr_text', qrTextInput.value);
+        formData.append('text_color', textColorInput.value);
+
+        // Eğer kullanıcı bir logo seçtiyse formData'ya append et
+        if (logoFile) {
+            // Beego tarafındaki c.GetFile("logoUpload") tanımı ile buradaki anahtar (key) aynı olmalı
+            formData.append('logoUpload', logoFile);
+        }
+
+        // Tasarımın nihai halini (Base64) kaydetmek istersen bunu da gönderebilirsin
+        // formData.append('full_qr_base64', canvas.toDataURL('image/png'));
+
+        saveQrBtn.disabled = true;
+        saveQrBtn.innerText = "Yükleniyor...";
+
+        // Rota tanımına göre endpoint'i düzenleyebilirsin (/api/url/save-settings vb.)
+        fetch('{{.logohref}}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert(data.message || "Tasarım ve logo başarıyla kaydedildi!");
+                // İhtiyaca göre modalı kapat veya sayfayı yenile
+                // $(saveQrBtn).closest('.modal').modal('hide');
+            } else {
+                alert("Hata: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('İstek hatası:', error);
+            alert('Sistemsel bir hata oluşti, lütfen tekrar deneyin.');
+        })
+        .finally(() => {
+            saveQrBtn.disabled = false;
+            saveQrBtn.innerText = "Değişiklikleri Kaydet";
+        });
+    });
+</script>

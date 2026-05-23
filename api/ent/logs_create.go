@@ -45,6 +45,12 @@ func (_c *LogsCreate) SetCreatedAt(v time.Time) *LogsCreate {
 	return _c
 }
 
+// SetType sets the "type" field.
+func (_c *LogsCreate) SetType(v string) *LogsCreate {
+	_c.mutation.SetType(v)
+	return _c
+}
+
 // SetLogID sets the "log" edge to the Url entity by ID.
 func (_c *LogsCreate) SetLogID(id int) *LogsCreate {
 	_c.mutation.SetLogID(id)
@@ -102,6 +108,9 @@ func (_c *LogsCreate) check() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Logs.created_at"`)}
 	}
+	if _, ok := _c.mutation.GetType(); !ok {
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Logs.type"`)}
+	}
 	if len(_c.mutation.LogIDs()) == 0 {
 		return &ValidationError{Name: "log", err: errors.New(`ent: missing required edge "Logs.log"`)}
 	}
@@ -146,6 +155,10 @@ func (_c *LogsCreate) createSpec() (*Logs, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(logs.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.GetType(); ok {
+		_spec.SetField(logs.FieldType, field.TypeString, value)
+		_node.Type = value
 	}
 	if nodes := _c.mutation.LogIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

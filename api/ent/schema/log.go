@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -17,6 +18,7 @@ func (Logs) Fields() []ent.Field {
 		field.String("ip"),
 		field.String("referer"),
 		field.Time("created_at"),
+		field.String("type"),
 	}
 }
 
@@ -25,6 +27,9 @@ func (Logs) Edges() []ent.Edge {
 		edge.From("log", Url.Type).
 			Ref("log_url").
 			Unique().
-			Required(),
+			Required().
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

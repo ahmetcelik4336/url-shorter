@@ -138,3 +138,7 @@ func (c *AuthController) RegisterHandler() {
 	c.Layout = "inc/layout.html"
 	c.TplName = "auth/register.html"
 }
+func (c *AuthController) LogOut() {
+	c.DelSession("token")
+	c.Redirect(helpers.Baseurl(c.Data["slug"], "auth/login"), 302)
+}

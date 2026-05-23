@@ -20,6 +20,8 @@ const (
 	FieldReferer = "referer"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
 	// EdgeLog holds the string denoting the log edge name in mutations.
 	EdgeLog = "log"
 	// Table holds the table name of the logs in the database.
@@ -40,6 +42,7 @@ var Columns = []string{
 	FieldIP,
 	FieldReferer,
 	FieldCreatedAt,
+	FieldType,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "logs"
@@ -89,6 +92,11 @@ func ByReferer(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByType orders the results by the type field.
+func ByType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldType, opts...).ToFunc()
 }
 
 // ByLogField orders the results by log field.

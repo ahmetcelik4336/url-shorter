@@ -39,7 +39,7 @@ func GetPanelMenus(lang string, data dto.GeneralSettings) []dto.PanelMenu {
 		{
 			Key:        "logout",
 			Title:      i18n.Tr(lang, "logout"),
-			Url:        helpers.Baseurl(lang, "panel/logout"),
+			Url:        helpers.Baseurl(lang, "auth/logout"),
 			SubsExists: false,
 			Order:      4,
 		},

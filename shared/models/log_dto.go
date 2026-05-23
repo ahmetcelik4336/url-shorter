@@ -4,6 +4,7 @@ type LogRequest struct {
 	Device  string `json:"device"`
 	Ip      string `json:"ip"`
 	Referer string `json:"referer"`
+	Type    string `json:"type"`
 }
 
 type LogResponse struct {

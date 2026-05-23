@@ -2,7 +2,7 @@ package dto
 
 import (
 	"api/ent"
-	"os"
+	"shared/helpers"
 )
 
 func ToUrlResponse(p *ent.Url) *UrlResponse {
@@ -26,37 +26,23 @@ func ToUrlResponse(p *ent.Url) *UrlResponse {
 	} else {
 		formattedExpiration = "Süresiz" // Veya "" (boş string) yapabilirsiniz
 	}
-	var base string
-	var base2 string
-	if p.Alias == "" {
-		base = p.ShortCode
-	} else {
-		base = p.Alias
-	}
-
-	if p.IsEncrypted {
-		base2 = "/" + p.Password
-	} else {
-		base2 = ""
-	}
-
-	siteurl := os.Getenv("SITEURL") + "url/"
 
 	response := &UrlResponse{
-		Id:              p.ID,
-		ShortCode:       p.ShortCode,
-		LongUrl:         p.LongURL,
-		CreateAt:        p.CreatedAt.Format("2.1.2006 15:04"),
-		Alias:           aliass,
-		IsEncrypted:     p.IsEncrypted,
-		IsEncryptedText: IsEncrypted,
-		// Çökmeyi önleyen güvenli değişkeni buraya veriyoruz:
+		Id:                      p.ID,
+		ShortCode:               p.ShortCode,
+		LongUrl:                 p.LongURL,
+		CreateAt:                p.CreatedAt.Format("2.1.2006 15:04"),
+		Alias:                   aliass,
+		IsEncrypted:             p.IsEncrypted,
+		IsEncryptedText:         IsEncrypted,
 		ExpirationDate:          formattedExpiration,
 		ExpirationDateFormatted: p.ExpirationDate.Format("2006-01-02 15:04"),
-		ResultUrl:               siteurl + base + base2,
-		Password:                p.Password,
+		//ResultUrl:               siteurl + base + base2,
+		Password: p.Password,
 	}
 
+	siteurl := helpers.GetShortUrl(response.Alias, response.Password, response.ShortCode, "url")
+	response.ResultUrl = siteurl
 	return response
 }
 

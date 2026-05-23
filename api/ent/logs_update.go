@@ -86,6 +86,20 @@ func (_u *LogsUpdate) SetNillableCreatedAt(v *time.Time) *LogsUpdate {
 	return _u
 }
 
+// SetType sets the "type" field.
+func (_u *LogsUpdate) SetType(v string) *LogsUpdate {
+	_u.mutation.SetType(v)
+	return _u
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_u *LogsUpdate) SetNillableType(v *string) *LogsUpdate {
+	if v != nil {
+		_u.SetType(*v)
+	}
+	return _u
+}
+
 // SetLogID sets the "log" edge to the Url entity by ID.
 func (_u *LogsUpdate) SetLogID(id int) *LogsUpdate {
 	_u.mutation.SetLogID(id)
@@ -172,6 +186,9 @@ func (_u *LogsUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(logs.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.GetType(); ok {
+		_spec.SetField(logs.FieldType, field.TypeString, value)
 	}
 	if _u.mutation.LogCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -276,6 +293,20 @@ func (_u *LogsUpdateOne) SetCreatedAt(v time.Time) *LogsUpdateOne {
 func (_u *LogsUpdateOne) SetNillableCreatedAt(v *time.Time) *LogsUpdateOne {
 	if v != nil {
 		_u.SetCreatedAt(*v)
+	}
+	return _u
+}
+
+// SetType sets the "type" field.
+func (_u *LogsUpdateOne) SetType(v string) *LogsUpdateOne {
+	_u.mutation.SetType(v)
+	return _u
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_u *LogsUpdateOne) SetNillableType(v *string) *LogsUpdateOne {
+	if v != nil {
+		_u.SetType(*v)
 	}
 	return _u
 }
@@ -396,6 +427,9 @@ func (_u *LogsUpdateOne) sqlSave(ctx context.Context) (_node *Logs, err error) {
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(logs.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.GetType(); ok {
+		_spec.SetField(logs.FieldType, field.TypeString, value)
 	}
 	if _u.mutation.LogCleared() {
 		edge := &sqlgraph.EdgeSpec{

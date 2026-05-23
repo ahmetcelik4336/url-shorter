@@ -19,6 +19,7 @@ type UrlService interface {
 	Redirect(shortcodeOrAlias, password string) (*dto.GeneralResponse[dto.UrlResponse], error)
 	Bulkcreate(userID int, req []dto.CreateUrlRequest) (*dto.GeneralResponse[dto.UrlResponse], error)
 	HistoryById(userID int, id int) (*dto.UrlResponse, error)
+	Delete(id int) (*dto.GeneralResponse[any], error)
 	//FindByAlias(alias string) (*dto.GeneralResponse[any], error)
 }
 
@@ -43,6 +44,21 @@ func (s *urlService) FindByAlias(alias string) (*dto.GeneralResponse[any], error
 		return nil, nil
 	}
 */
+
+func (s *urlService) Delete(id int) (*dto.GeneralResponse[any], error) {
+
+	err := s.repo.Delete(id)
+	if err != nil {
+		return &dto.GeneralResponse[any]{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	return &dto.GeneralResponse[any]{
+		Status: true,
+	}, nil
+}
 func (s *urlService) FindByShortCode(shortcode string) (*ent.Url, error) {
 
 	url, err := s.repo.FindByShortCode(shortcode)

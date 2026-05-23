@@ -21,3 +21,22 @@ func Baseurl(lang interface{}, path string) string {
 	baseurl := os.Getenv("BASEURL")
 	return fmt.Sprintf("%s/%s/%s", baseurl, l, path)
 }
+
+func BaseurlWithoutSlug(path string) string {
+	baseurl := os.Getenv("BASEURL")
+	return fmt.Sprintf("%s/%s", baseurl, path)
+}
+
+func GetShortUrl(alias, password, shortCode, type_ string) string {
+	if alias == "" {
+		alias = shortCode
+	}
+
+	if password != "" {
+		password = "/" + password
+	} else {
+		password = ""
+	}
+
+	return BaseurlWithoutSlug(type_ + "/" + alias + password)
+}

@@ -22,6 +22,7 @@ type UrlRepository interface {
 	CreateBulk(userID int, inputs []dto.CreateUrlRequest) ([]*ent.Url, error)
 	FindByAlias(alias string) (*ent.Url, error)
 	FindByAliasWithId(id int, alias string) (*ent.Url, error)
+	Delete(id int) error
 }
 
 type urlRepository struct {
@@ -35,7 +36,9 @@ func NewUrlRepository(db *ent.Client, dialect string) UrlRepository {
 		dialect: dialect,
 	}
 }
-
+func (r *urlRepository) Delete(id int) error {
+	return r.db.Url.DeleteOneID(id).Exec(context.Background())
+}
 func (r *urlRepository) FindByShortCode(short_code string) (*ent.Url, error) {
 
 	return r.db.Url.

@@ -23,6 +23,7 @@ func init() {
 		beego.NSNamespace("/auth",
 			beego.NSRouter("/login", &controllers.AuthController{}, "get:Login;post:LoginHandler"),
 			beego.NSRouter("/register", &controllers.AuthController{}, "get:Register;post:RegisterHandler"),
+			beego.NSRouter("/logout", &controllers.AuthController{}, "get:LogOut"),
 		),
 
 		beego.NSRouter("/", &controllers.MainController{}),
@@ -34,14 +35,18 @@ func init() {
 			beego.NSRouter("/urls/save/?:id", &controllers.PanelController{}, "post:UrlSaveHandler"),
 			beego.NSRouter("/urls/batch", &controllers.PanelController{}, "post:BatchExcel"),
 			beego.NSRouter("/urls/download", &controllers.PanelController{}, "get:DownloadTemplate"),
+			beego.NSRouter("/urls/qr/:id", &controllers.PanelController{}, "get:Qr"),
+			beego.NSRouter("/urls/qrcreate/:id", &controllers.PanelController{}, "get:QrCreate"),
+			beego.NSRouter("/urls/logoUpload", &controllers.PanelController{}, "post:UploadLogo"),
 		),
 	)
 	beego.AddNamespace(ns)
 
-	beego.Router("/url/:shortcode/?:password", &controllers.RedirectController{}, "get:Redirect")
+	beego.Router("/:type/:shortcode/?:password", &controllers.RedirectController{}, "get:Redirect")
 
 	beego.InsertFilter("/:lang/panel/*", beego.BeforeRouter, middleware.PanelFilter)
 	beego.InsertFilter("/:lang/panel", beego.BeforeRouter, middleware.PanelFilter)
+	beego.InsertFilter("/:lang/auth/logout", beego.BeforeRouter, middleware.PanelFilter)
 
 	beego.Get("/", func(ctx *context.Context) {
 		lang := ctx.Input.Param(":lang")

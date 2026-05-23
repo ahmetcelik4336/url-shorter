@@ -26,6 +26,8 @@ type Logs struct {
 	Referer string `json:"referer,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// Type holds the value of the "type" field.
+	Type string `json:"type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the LogsQuery when eager-loading is set.
 	Edges        LogsEdges `json:"edges"`
@@ -60,7 +62,7 @@ func (*Logs) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case logs.FieldID:
 			values[i] = new(sql.NullInt64)
-		case logs.FieldDevice, logs.FieldIP, logs.FieldReferer:
+		case logs.FieldDevice, logs.FieldIP, logs.FieldReferer, logs.FieldType:
 			values[i] = new(sql.NullString)
 		case logs.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -110,6 +112,12 @@ func (_m *Logs) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
+			}
+		case logs.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				_m.Type = value.String
 			}
 		case logs.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -170,6 +178,9 @@ func (_m *Logs) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(_m.Type)
 	builder.WriteByte(')')
 	return builder.String()
 }

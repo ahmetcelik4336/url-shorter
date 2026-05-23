@@ -49,6 +49,10 @@ func Init(c *container.Container) {
 		Service: c.UrlService,
 	}, "put:Update")
 
+	beego.Router("/v1/panel/delete/:id", &controllers.UrlController{
+		Service: c.UrlService,
+	}, "delete:Delete")
+
 	beego.Router("/v1/panel/bulkcreate", &controllers.UrlController{
 		Service: c.UrlService,
 	}, "post:Bulkcreate")

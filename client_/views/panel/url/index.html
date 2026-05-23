@@ -2,11 +2,12 @@
     {{template "panel/menu.html" .}}
 
 
-    <di class="card my-3">
+    <div class="card my-3">
         <div class="card-header" style="display: flex;justify-content: space-between;align-items: center;">
             <b>Urls</b>
             <div style="display: flex;flex-direction: row;align-items: center;gap: 10px;">
-                <form action='{{baseurl .slug "panel/urls/batch"}}' class="p-2" method="post" enctype="multipart/form-data">
+                <form action='{{baseurl .slug "panel/urls/batch"}}' class="p-2" method="post"
+                    enctype="multipart/form-data">
                     <label for="excel" class="m-0">
                         <input type="file" class="d-none" name="excel_file" id="excel">
                         <span><i class="fas fa-upload"></i></span>
@@ -29,8 +30,8 @@
             <div class="alert alert-danger">{{.flash.Err}}</div>
             {{end}}
             <div class="table-responsive">
-                <table class="table">
-                    <thead>
+                <table class="table table-hover" id="urlTable">
+                    <thead class="thead-light">
                         <tr>
                             <th>Kod</th>
                             <th>Tarih</th>
@@ -56,12 +57,20 @@
                                 </a>
                             </td>
                             <td>
-                                <a href="{{ $url.ResultUrl }}" class="text-success mr-1">
+                                <a target="_blank" href="{{ $url.ResultUrl }}" class="text-success mr-1">
                                     <i class="fas fa-link"></i>
                                 </a>
                                 <a data-href='{{ baseurl $.slug (printf "panel/urls/add/%d" $url.Id) }}'
-                                    class="text-primary add">
+                                    class="text-primary add mr-1">
                                     <i class="fas fa-edit"></i>
+                                </a>
+                                <a data-href='{{ baseurl $.slug (printf "panel/urls/qr/%d" $url.Id) }}'
+                                    class="text-primary qr mr-1">
+                                    <i class="fas fa-qrcode"></i>
+                                </a>
+                                <a data-href='{{ baseurl $.slug (printf "panel/urls/%d" $url.Id) }}'
+                                    class="text-danger " onclick="sil('{{$url.Id}}',this)">
+                                    <i class="fas fa-trash"></i>
                                 </a>
                             </td>
                         </tr>
@@ -70,17 +79,85 @@
                 </table>
             </div>
         </div>
-    </di>
+    </div>
 
 </div>
 <div class="modal fade" id="addmodal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="qr" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/2.3.1/css/dataTables.dataTables.css">
+<script src="https://cdn.datatables.net/2.3.1/js/dataTables.js"></script>
+<link href="https://cdn.datatables.net/2.3.1/css/dataTables.bootstrap4.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/2.3.1/js/dataTables.bootstrap4.js"></script>
+<style>
+    .dt-length,
+    .dt-search {
+        margin-bottom: 20px;
+    }
+
+    div.dt-container .dt-paging .dt-paging-button:hover {
+        outline: none;
+        background: white !important;
+        border: 1px solid white !important;
+    }
+    .dt-layout-table{
+        margin-bottom: 20px !important;
+    }
+</style>
 <script>
+
+
+    function sil(id, event) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: 'Bu kayıt silinecek!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, sil',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                // ajax veya redirect
+                console.log("Silinecek ID:", id);
+
+                $.ajax({
+                    type: "delete",
+                    url: $(event).data('href'),
+                    data: {
+                        id: id
+                    },
+                    success: function (res) {
+                        Swal.fire({
+                            title: 'Silindi!',
+                            text: 'Kayıt başarıyla silindi.',
+                            icon: 'success'
+                        });
+                    }
+                })
+
+
+
+            }
+
+        });
+    }
     async function copyToClipboard(text) {
         try {
             await navigator.clipboard.writeText(text);
@@ -96,8 +173,24 @@
                 $('#addmodal').modal("show")
             })
         })
+        $('.qr').click(function () {
+            $.get(this.dataset.href, {}, function (res) {
+                $('#qr .modal-content').html(res)
+                $('#qr').modal("show")
+            })
+        })
         $('[name="excel_file"]').change(function () {
             $(this).parents('form').submit()
         })
+        $('#urlTable').DataTable({
+            pageLength: 10,
+            ordering: true,
+            searching: true,
+            responsive: true,
+            order: [1, "desc"],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/2.3.1/i18n/tr.json'
+            }
+        });
     })
 </script>

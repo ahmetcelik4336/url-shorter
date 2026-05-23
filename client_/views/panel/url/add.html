@@ -1,5 +1,5 @@
 <div class="modal-header w-100" style="display: flex;justify-content: space-between;align-items: center;">
-    <h5 class="modal-title">Modal title</h5>
+    <h5 class="modal-title">Url Add/Edit</h5>
     <span type="button" class="close btn btn-sm" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </span>
@@ -54,7 +54,7 @@
             <div class='collapse py-2 {{ if .urls }} active show {{end}}' id="collapseExample2">
                 <div class="form-group">
                     <input type="datetime-local"
-                    value="{{ if .urls }}{{ .urls.ExpirationDateFormatted }}{{ end }}" name="expiration" placeholder="" class="form-control">
+                    value='{{ if and .urls (ne .urls.ExpirationDate "Süresiz") }}{{ .urls.ExpirationDateFormatted }}{{ end }}' name="expiration" placeholder="" class="form-control">
                 </div>
             </div>
         </div>

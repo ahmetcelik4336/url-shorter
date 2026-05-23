@@ -43,19 +43,5 @@ func (s *settingService) GetGeneralSettings() (*dto.GeneralSettings, error) {
 	if err != nil {
 		return nil, errors.New("hata oluştu")
 	}
-	/*
-		var response []map[string]string
-
-		for _, item := range settings {
-			var decodedMap map[string]string
-
-			err := json.Unmarshal([]byte(item.SettingContent), &decodedMap)
-			if err != nil {
-				continue
-			}
-
-			response = append(response, decodedMap)
-		}
-	*/
 	return settings, nil
 }

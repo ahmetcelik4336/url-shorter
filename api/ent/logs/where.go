@@ -75,6 +75,11 @@ func CreatedAt(v time.Time) predicate.Logs {
 	return predicate.Logs(sql.FieldEQ(FieldCreatedAt, v))
 }
 
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldEQ(FieldType, v))
+}
+
 // DeviceEQ applies the EQ predicate on the "device" field.
 func DeviceEQ(v string) predicate.Logs {
 	return predicate.Logs(sql.FieldEQ(FieldDevice, v))
@@ -308,6 +313,71 @@ func CreatedAtLT(v time.Time) predicate.Logs {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Logs {
 	return predicate.Logs(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldEQ(FieldType, v))
+}
+
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldNEQ(FieldType, v))
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...string) predicate.Logs {
+	return predicate.Logs(sql.FieldIn(FieldType, vs...))
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...string) predicate.Logs {
+	return predicate.Logs(sql.FieldNotIn(FieldType, vs...))
+}
+
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldGT(FieldType, v))
+}
+
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldGTE(FieldType, v))
+}
+
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldLT(FieldType, v))
+}
+
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldLTE(FieldType, v))
+}
+
+// TypeContains applies the Contains predicate on the "type" field.
+func TypeContains(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldContains(FieldType, v))
+}
+
+// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
+func TypeHasPrefix(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldHasPrefix(FieldType, v))
+}
+
+// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
+func TypeHasSuffix(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldHasSuffix(FieldType, v))
+}
+
+// TypeEqualFold applies the EqualFold predicate on the "type" field.
+func TypeEqualFold(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldEqualFold(FieldType, v))
+}
+
+// TypeContainsFold applies the ContainsFold predicate on the "type" field.
+func TypeContainsFold(v string) predicate.Logs {
+	return predicate.Logs(sql.FieldContainsFold(FieldType, v))
 }
 
 // HasLog applies the HasEdge predicate on the "log" edge.

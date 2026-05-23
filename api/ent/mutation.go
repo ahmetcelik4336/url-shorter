@@ -45,6 +45,7 @@ type LogsMutation struct {
 	ip            *string
 	referer       *string
 	created_at    *time.Time
+	_type         *string
 	clearedFields map[string]struct{}
 	log           *int
 	clearedlog    bool
@@ -295,6 +296,42 @@ func (m *LogsMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
+// SetType sets the "type" field.
+func (m *LogsMutation) SetType(s string) {
+	m._type = &s
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *LogsMutation) GetType() (r string, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Logs entity.
+// If the Logs object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LogsMutation) OldType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *LogsMutation) ResetType() {
+	m._type = nil
+}
+
 // SetLogID sets the "log" edge to the Url entity by id.
 func (m *LogsMutation) SetLogID(id int) {
 	m.log = &id
@@ -368,7 +405,7 @@ func (m *LogsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LogsMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.device != nil {
 		fields = append(fields, logs.FieldDevice)
 	}
@@ -380,6 +417,9 @@ func (m *LogsMutation) Fields() []string {
 	}
 	if m.created_at != nil {
 		fields = append(fields, logs.FieldCreatedAt)
+	}
+	if m._type != nil {
+		fields = append(fields, logs.FieldType)
 	}
 	return fields
 }
@@ -397,6 +437,8 @@ func (m *LogsMutation) Field(name string) (ent.Value, bool) {
 		return m.Referer()
 	case logs.FieldCreatedAt:
 		return m.CreatedAt()
+	case logs.FieldType:
+		return m.GetType()
 	}
 	return nil, false
 }
@@ -414,6 +456,8 @@ func (m *LogsMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldReferer(ctx)
 	case logs.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case logs.FieldType:
+		return m.OldType(ctx)
 	}
 	return nil, fmt.Errorf("unknown Logs field %s", name)
 }
@@ -450,6 +494,13 @@ func (m *LogsMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
+		return nil
+	case logs.FieldType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Logs field %s", name)
@@ -511,6 +562,9 @@ func (m *LogsMutation) ResetField(name string) error {
 		return nil
 	case logs.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case logs.FieldType:
+		m.ResetType()
 		return nil
 	}
 	return fmt.Errorf("unknown Logs field %s", name)
