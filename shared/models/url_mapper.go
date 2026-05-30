@@ -5,7 +5,7 @@ import (
 	"shared/helpers"
 )
 
-func ToUrlResponse(p *ent.Url) *UrlResponse {
+func ToUrlResponse(p *ent.Url, type_ string) *UrlResponse {
 	var IsEncrypted string = "Şifresiz"
 	if p.IsEncrypted {
 		IsEncrypted = "Şifreli"
@@ -41,7 +41,7 @@ func ToUrlResponse(p *ent.Url) *UrlResponse {
 		Password: p.Password,
 	}
 
-	siteurl := helpers.GetShortUrl(response.Alias, response.Password, response.ShortCode, "url")
+	siteurl := helpers.GetShortUrl(response.Alias, response.Password, response.ShortCode, type_)
 	response.ResultUrl = siteurl
 	return response
 }
@@ -51,7 +51,7 @@ func ToUrlResponseList(posts []*ent.Url) []*UrlResponse {
 	var list []*UrlResponse
 
 	for _, p := range posts {
-		list = append(list, ToUrlResponse(p))
+		list = append(list, ToUrlResponse(p, "url"))
 	}
 
 	return list

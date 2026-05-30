@@ -1,0 +1,272 @@
+<div class="alert {{ if .status }} alert-success {{else}} alert-danger {{end}} text-left"
+    style="display: flex; flex-direction: column;">
+    <b>
+        {{if .status}}
+        {{else}}
+        {{.message}}
+        {{end}}
+    </b>
+
+    {{ if .status}}
+    <style>
+        .qrarea label {
+            font-size: 14px;
+        }
+    </style>
+
+    <div class="row qrarea">
+        <div class="col-12 col-lg-7 text-center">
+            <h6 class="text-muted mb-2">Canlı Önizleme</h6>
+
+            <canvas id="qrCanvas" width="250"
+                style="border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 100%; height: auto;"></canvas>
+
+            <div class="d-flex gap-2 mt-3 w-100 justify-content-center">
+                <button type="button" id="downloadBtn" class="btn text-white btn-sm"
+                    style="font-size: 14px; background-color: rgb(240,88,114);">QR Kodu İndir</button>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-5 row">
+            <div class="control-group mb-3 col-12 col-lg-12">
+                <label class="form-label">Foreground</label>
+                <input type="color" id="fgColor" class="form-control form-control-color w-100 form-control-sm"
+                    value="#F86C6E">
+            </div>
+
+            <div class="control-group mb-3 col-12 col-lg-12">
+                <label class="form-label">Background</label>
+                <input type="color" id="bgColor" class="form-control form-control-color w-100 form-control-sm"
+                    value="#ffffff">
+            </div>
+
+            <div class="control-group mb-3 col-12 col-lg-12">
+                <label class="form-label">Sub Text</label>
+                <input type="text" id="qrText" class="form-control form-control-sm" placeholder="Örn: TARATINIZ"
+                    maxlength="20">
+            </div>
+
+            <div class="control-group mb-3 col-12 col-lg-12">
+                <label class="form-label">Text Color</label>
+                <input type="color" id="textColor" class="form-control form-control-color w-100 form-control-sm"
+                    value="#F86C6E">
+            </div>
+
+            <div class="control-group mb-3 col-12 col-lg-12">
+                <label for="logoUpload" class="form-label btn w-100 text-white"
+                    style="background-color: rgb(240,88,114); cursor: pointer;">
+                    <input type="file" id="logoUpload" class="form-control form-control-sm d-none"
+                        accept="image/png, image/jpeg">
+                    <span class="text-white" id="uploadLabelText">Logo Yükle (PNG/JPG)</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    {{end}}
+</div>
+
+<script>
+    // Canvas Kurulumu
+    var canvas = document.getElementById('qrCanvas');
+    var ctx = canvas ? canvas.getContext('2d', { willReadFrequently: true }) : null;
+
+    // DOM Elementlerini Yakalama
+    var fgColorInput = document.getElementById('fgColor');
+    var bgColorInput = document.getElementById('bgColor');
+    var qrTextInput = document.getElementById('qrText');
+    var textColorInput = document.getElementById('textColor');
+    var logoUpload = document.getElementById('logoUpload');
+    var downloadBtn = document.getElementById('downloadBtn');
+    var saveQrBtn = document.getElementById('saveQrBtn');
+    var uploadLabelText = document.getElementById('uploadLabelText');
+
+    // Görsel Belleği
+    var baseQRImage = new Image();
+    var logoImage = null;
+
+    if (canvas) {
+        // Sunucudan gelen Base64 verisini kaynağa aktar
+        baseQRImage.src = "data:image/png;base64,{{.qr}}";
+
+        // QR Görseli yüklendiğinde ilk çizimi yap
+        baseQRImage.onload = () => {
+            drawQR();
+        };
+
+        // 💡 Düzenlenen Dosya Yükleme Alanı
+        if (logoUpload) {
+            logoUpload.addEventListener('change', (e) => {
+                let file = e.target.files[0];
+                if (file) {
+                    uploadLabelText.innerText = "Resim Seçildi: " + file.name;
+                    let reader = new FileReader();
+                    reader.onload = (event) => {
+                        logoImage = new Image();
+                        logoImage.src = event.target.result;
+                        // Resim tamamen nesneye yüklenince çizimi tetikle
+                        logoImage.onload = () => {
+                            drawQR();
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    logoImage = null;
+                    uploadLabelText.innerText = "Logo Yükle (PNG/JPG)";
+                    drawQR();
+                }
+            });
+        }
+
+        // Giriş elemanlarının herhangi biri değiştiğinde anlık çizim tetikle
+        [fgColorInput, bgColorInput, qrTextInput, textColorInput].forEach(input => {
+            if (input) input.addEventListener('input', drawQR);
+        });
+    }
+
+    // Hex renk kodunu RGB nesnesine dönüştüren fonksiyon
+    function hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : { r: 0, g: 0, b: 0 };
+    }
+
+    // ANA ÇİZİM FONKSİYONU
+    function drawQR() {
+        if (!baseQRImage.complete) return;
+
+        let width = canvas.width;
+        let text = qrTextInput.value.trim().toUpperCase();
+
+        // 💡 KOD DÜZELTMESİ: Eğer yazı varsa canvas yüksekliğini dinamik olarak arttırıyoruz, yoksa kare kalıyor
+        let qrHeight = width;
+        canvas.height = text ? qrHeight + 45 : qrHeight;
+
+        // Temizle ve ana QR'ı bas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(baseQRImage, 0, 0, width, qrHeight);
+
+        let targetFg = hexToRgb(fgColorInput.value);
+        let targetBg = hexToRgb(bgColorInput.value);
+
+        // Piksel renk manipülasyonu (Siyahları fgColor, Beyazları bgColor yapar)
+        let imgData = ctx.getImageData(0, 0, width, qrHeight);
+        let data = imgData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            let r = data[i];
+            let g = data[i + 1];
+            let b = data[i + 2];
+            let brightness = (r + g + b) / 3;
+
+            if (brightness < 128) {
+                data[i] = targetFg.r;
+                data[i + 1] = targetFg.g;
+                data[i + 2] = targetFg.b;
+            } else {
+                data[i] = targetBg.r;
+                data[i + 1] = targetBg.g;
+                data[i + 2] = targetBg.b;
+            }
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        // Eğer yazı varsa, ek olarak üretilen alt alanın arka planını boya
+        if (text) {
+            ctx.fillStyle = bgColorInput.value;
+            ctx.fillRect(0, qrHeight, width, canvas.height - qrHeight);
+
+            // Alt Yazıyı Yazma
+            ctx.fillStyle = textColorInput.value;
+            ctx.font = "bold 15px Arial"; // 250px genişlikteki canvas için 15px ideal pundodur
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(text, width / 2, qrHeight + 22);
+        }
+
+        // Ortaya Logo Yerleştirme
+        // Ortaya Logo Yerleştirme (GÜNCELLENDİ)
+        if (logoImage) {
+            // Oran %20'den %15'e düşürüldü (Güvenli sınır)
+            let logoSize = width * 0.15;
+            let logoX = (width - logoSize) / 2;
+            let logoY = (qrHeight - logoSize) / 2;
+
+            // Koruma alanı mesafesi
+            let padding = 4;
+
+            ctx.save(); // Mevcut canvas durumunu kaydet
+
+            // 1. Arka plan koruma alanını yuvarlak (oval) olarak çiz
+            ctx.fillStyle = bgColorInput.value;
+            ctx.beginPath();
+            ctx.arc(width / 2, qrHeight / 2, (logoSize / 2) + padding, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2. Logoyu yuvarlak maske içine alarak çiz (QR piksellerini daha az baltalar)
+            ctx.beginPath();
+            ctx.arc(width / 2, qrHeight / 2, logoSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+
+            ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+
+            ctx.restore(); // Canvas durumunu geri yükle
+        }
+    }
+
+    // TASARLANMIŞ GÖRSELİ İNDİRME İŞLEMİ
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            let link = document.createElement('a');
+            link.download = 'ozellestirilmis-qr.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
+
+    // PARAMETRELERİ BACKEND'E (BEEGO) KAYDETME
+    if (saveQrBtn) {
+        saveQrBtn.addEventListener('click', function () {
+            let logoFile = logoUpload.files[0];
+            let formData = new FormData();
+
+            formData.append('fg_color', fgColorInput.value);
+            formData.append('bg_color', bgColorInput.value);
+            formData.append('qr_text', qrTextInput.value);
+            formData.append('text_color', textColorInput.value);
+
+            if (logoFile) {
+                formData.append('logoUpload', logoFile);
+            }
+
+            saveQrBtn.disabled = true;
+            saveQrBtn.innerText = "Yükleniyor...";
+
+            fetch('{{.logohref}}', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message || "Tasarım ve logo başarıyla kaydedildi!");
+                    } else {
+                        alert("Hata: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('İstek hatası:', error);
+                    alert('Sistemsel bir hata oluştu, lütfen tekrar deneyin.');
+                })
+                .finally(() => {
+                    saveQrBtn.disabled = false;
+                    saveQrBtn.innerText = "Tasarımı Kaydet";
+                });
+        });
+    }
+</script>

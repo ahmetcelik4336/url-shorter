@@ -32,9 +32,11 @@ type User struct {
 type UserEdges struct {
 	// URL holds the value of the url edge.
 	URL []*Url `json:"url,omitempty"`
+	// Log holds the value of the log edge.
+	Log []*Logs `json:"log,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // URLOrErr returns the URL value or an error if the edge
@@ -44,6 +46,15 @@ func (e UserEdges) URLOrErr() ([]*Url, error) {
 		return e.URL, nil
 	}
 	return nil, &NotLoadedError{edge: "url"}
+}
+
+// LogOrErr returns the Log value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) LogOrErr() ([]*Logs, error) {
+	if e.loadedTypes[1] {
+		return e.Log, nil
+	}
+	return nil, &NotLoadedError{edge: "log"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -110,6 +121,11 @@ func (_m *User) Value(name string) (ent.Value, error) {
 // QueryURL queries the "url" edge of the User entity.
 func (_m *User) QueryURL() *URLQuery {
 	return NewUserClient(_m.config).QueryURL(_m)
+}
+
+// QueryLog queries the "log" edge of the User entity.
+func (_m *User) QueryLog() *LogsQuery {
+	return NewUserClient(_m.config).QueryLog(_m)
 }
 
 // Update returns a builder for updating this User.

@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"api/ent/logs"
 	"api/ent/url"
 	"api/ent/user"
 	"context"
@@ -51,6 +52,21 @@ func (_c *UserCreate) AddURL(v ...*Url) *UserCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddURLIDs(ids...)
+}
+
+// AddLogIDs adds the "log" edge to the Logs entity by IDs.
+func (_c *UserCreate) AddLogIDs(ids ...int) *UserCreate {
+	_c.mutation.AddLogIDs(ids...)
+	return _c
+}
+
+// AddLog adds the "log" edges to the Logs entity.
+func (_c *UserCreate) AddLog(v ...*Logs) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddLogIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -148,6 +164,22 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(url.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.LogIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LogTable,
+			Columns: []string{user.LogColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(logs.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

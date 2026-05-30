@@ -21,5 +21,6 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("url", Url.Type),
+		edge.To("log", Logs.Type),
 	}
 }

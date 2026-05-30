@@ -287,6 +287,29 @@ func HasURLWith(preds ...predicate.Url) predicate.User {
 	})
 }
 
+// HasLog applies the HasEdge predicate on the "log" edge.
+func HasLog() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, LogTable, LogColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLogWith applies the HasEdge predicate on the "log" edge with a given conditions (other predicates).
+func HasLogWith(preds ...predicate.Logs) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newLogStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(sql.AndPredicates(predicates...))

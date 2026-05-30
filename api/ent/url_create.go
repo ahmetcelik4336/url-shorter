@@ -110,6 +110,14 @@ func (_c *URLCreate) SetUserID(id int) *URLCreate {
 	return _c
 }
 
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (_c *URLCreate) SetNillableUserID(id *int) *URLCreate {
+	if id != nil {
+		_c = _c.SetUserID(*id)
+	}
+	return _c
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_c *URLCreate) SetUser(v *User) *URLCreate {
 	return _c.SetUserID(v.ID)
@@ -195,9 +203,6 @@ func (_c *URLCreate) check() error {
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Url.created_at"`)}
-	}
-	if len(_c.mutation.UserIDs()) == 0 {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Url.user"`)}
 	}
 	return nil
 }

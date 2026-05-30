@@ -3,6 +3,7 @@ package controllers
 import (
 	"api/internal/services"
 	"encoding/json"
+	"log"
 	dto "shared/models"
 
 	beego "github.com/beego/beego/v2/server/web"
@@ -22,7 +23,6 @@ type RedirectController struct {
 // @Failure 500 server error
 // @router /url/:shortcode [post]
 func (c *RedirectController) Redirect() {
-
 	shortcode := c.Ctx.Input.Param(":shortcode")
 	password := c.Ctx.Input.Param(":password")
 	response, err := c.Service.Redirect(shortcode, password)
@@ -43,7 +43,10 @@ func (c *RedirectController) Redirect() {
 			}
 			return
 		}
-		_, err := c.LogService.Create(response.Data.Id, req)
+		url, _ := c.Service.GetById(response.Data.Id)
+		log.Println("err", url)
+		_, err := c.LogService.Create(response.Data.Id, url.Edges.User.ID, req)
+
 		if err == nil {
 			c.Data["json"] = response
 		} else {

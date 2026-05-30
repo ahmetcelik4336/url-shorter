@@ -29,6 +29,7 @@ func NewAnalysisRepository(db *ent.Client, dialect string) AnalysisRepository {
 		dialect: dialect,
 	}
 }
+
 func (r *analysisRepository) GetURLCountTotal() (*dto.UrlCountAnalysisResponse, error) {
 	q := r.db.Url.
 		Query()

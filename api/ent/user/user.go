@@ -20,6 +20,8 @@ const (
 	FieldPassword = "password"
 	// EdgeURL holds the string denoting the url edge name in mutations.
 	EdgeURL = "url"
+	// EdgeLog holds the string denoting the log edge name in mutations.
+	EdgeLog = "log"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// URLTable is the table that holds the url relation/edge.
@@ -29,6 +31,13 @@ const (
 	URLInverseTable = "urls"
 	// URLColumn is the table column denoting the url relation/edge.
 	URLColumn = "user_url"
+	// LogTable is the table that holds the log relation/edge.
+	LogTable = "logs"
+	// LogInverseTable is the table name for the Logs entity.
+	// It exists in this package in order to avoid circular dependency with the "logs" package.
+	LogInverseTable = "logs"
+	// LogColumn is the table column denoting the log relation/edge.
+	LogColumn = "user_log"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -90,10 +99,31 @@ func ByURL(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newURLStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByLogCount orders the results by log count.
+func ByLogCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newLogStep(), opts...)
+	}
+}
+
+// ByLog orders the results by log terms.
+func ByLog(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLogStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newURLStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(URLInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, URLTable, URLColumn),
+	)
+}
+func newLogStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LogInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, LogTable, LogColumn),
 	)
 }

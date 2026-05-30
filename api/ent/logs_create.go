@@ -5,6 +5,7 @@ package ent
 import (
 	"api/ent/logs"
 	"api/ent/url"
+	"api/ent/user"
 	"context"
 	"errors"
 	"fmt"
@@ -57,9 +58,36 @@ func (_c *LogsCreate) SetLogID(id int) *LogsCreate {
 	return _c
 }
 
+// SetNillableLogID sets the "log" edge to the Url entity by ID if the given value is not nil.
+func (_c *LogsCreate) SetNillableLogID(id *int) *LogsCreate {
+	if id != nil {
+		_c = _c.SetLogID(*id)
+	}
+	return _c
+}
+
 // SetLog sets the "log" edge to the Url entity.
 func (_c *LogsCreate) SetLog(v *Url) *LogsCreate {
 	return _c.SetLogID(v.ID)
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (_c *LogsCreate) SetUserID(id int) *LogsCreate {
+	_c.mutation.SetUserID(id)
+	return _c
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (_c *LogsCreate) SetNillableUserID(id *int) *LogsCreate {
+	if id != nil {
+		_c = _c.SetUserID(*id)
+	}
+	return _c
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (_c *LogsCreate) SetUser(v *User) *LogsCreate {
+	return _c.SetUserID(v.ID)
 }
 
 // Mutation returns the LogsMutation object of the builder.
@@ -110,9 +138,6 @@ func (_c *LogsCreate) check() error {
 	}
 	if _, ok := _c.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Logs.type"`)}
-	}
-	if len(_c.mutation.LogIDs()) == 0 {
-		return &ValidationError{Name: "log", err: errors.New(`ent: missing required edge "Logs.log"`)}
 	}
 	return nil
 }
@@ -175,6 +200,23 @@ func (_c *LogsCreate) createSpec() (*Logs, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.url_log_url = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   logs.UserTable,
+			Columns: []string{logs.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_log = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

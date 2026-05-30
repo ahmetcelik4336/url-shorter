@@ -49,6 +49,8 @@ type LogsMutation struct {
 	clearedFields map[string]struct{}
 	log           *int
 	clearedlog    bool
+	user          *int
+	cleareduser   bool
 	done          bool
 	oldValue      func(context.Context) (*Logs, error)
 	predicates    []predicate.Logs
@@ -371,6 +373,45 @@ func (m *LogsMutation) ResetLog() {
 	m.clearedlog = false
 }
 
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *LogsMutation) SetUserID(id int) {
+	m.user = &id
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *LogsMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *LogsMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserID returns the "user" edge ID in the mutation.
+func (m *LogsMutation) UserID() (id int, exists bool) {
+	if m.user != nil {
+		return *m.user, true
+	}
+	return
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *LogsMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *LogsMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
 // Where appends a list predicates to the LogsMutation builder.
 func (m *LogsMutation) Where(ps ...predicate.Logs) {
 	m.predicates = append(m.predicates, ps...)
@@ -572,9 +613,12 @@ func (m *LogsMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *LogsMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.log != nil {
 		edges = append(edges, logs.EdgeLog)
+	}
+	if m.user != nil {
+		edges = append(edges, logs.EdgeUser)
 	}
 	return edges
 }
@@ -587,13 +631,17 @@ func (m *LogsMutation) AddedIDs(name string) []ent.Value {
 		if id := m.log; id != nil {
 			return []ent.Value{*id}
 		}
+	case logs.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *LogsMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -605,9 +653,12 @@ func (m *LogsMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *LogsMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedlog {
 		edges = append(edges, logs.EdgeLog)
+	}
+	if m.cleareduser {
+		edges = append(edges, logs.EdgeUser)
 	}
 	return edges
 }
@@ -618,6 +669,8 @@ func (m *LogsMutation) EdgeCleared(name string) bool {
 	switch name {
 	case logs.EdgeLog:
 		return m.clearedlog
+	case logs.EdgeUser:
+		return m.cleareduser
 	}
 	return false
 }
@@ -629,6 +682,9 @@ func (m *LogsMutation) ClearEdge(name string) error {
 	case logs.EdgeLog:
 		m.ClearLog()
 		return nil
+	case logs.EdgeUser:
+		m.ClearUser()
+		return nil
 	}
 	return fmt.Errorf("unknown Logs unique edge %s", name)
 }
@@ -639,6 +695,9 @@ func (m *LogsMutation) ResetEdge(name string) error {
 	switch name {
 	case logs.EdgeLog:
 		m.ResetLog()
+		return nil
+	case logs.EdgeUser:
+		m.ResetUser()
 		return nil
 	}
 	return fmt.Errorf("unknown Logs edge %s", name)
@@ -2320,6 +2379,9 @@ type UserMutation struct {
 	url           map[int]struct{}
 	removedurl    map[int]struct{}
 	clearedurl    bool
+	log           map[int]struct{}
+	removedlog    map[int]struct{}
+	clearedlog    bool
 	done          bool
 	oldValue      func(context.Context) (*User, error)
 	predicates    []predicate.User
@@ -2585,6 +2647,60 @@ func (m *UserMutation) ResetURL() {
 	m.removedurl = nil
 }
 
+// AddLogIDs adds the "log" edge to the Logs entity by ids.
+func (m *UserMutation) AddLogIDs(ids ...int) {
+	if m.log == nil {
+		m.log = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.log[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLog clears the "log" edge to the Logs entity.
+func (m *UserMutation) ClearLog() {
+	m.clearedlog = true
+}
+
+// LogCleared reports if the "log" edge to the Logs entity was cleared.
+func (m *UserMutation) LogCleared() bool {
+	return m.clearedlog
+}
+
+// RemoveLogIDs removes the "log" edge to the Logs entity by IDs.
+func (m *UserMutation) RemoveLogIDs(ids ...int) {
+	if m.removedlog == nil {
+		m.removedlog = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.log, ids[i])
+		m.removedlog[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLog returns the removed IDs of the "log" edge to the Logs entity.
+func (m *UserMutation) RemovedLogIDs() (ids []int) {
+	for id := range m.removedlog {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LogIDs returns the "log" edge IDs in the mutation.
+func (m *UserMutation) LogIDs() (ids []int) {
+	for id := range m.log {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLog resets all changes to the "log" edge.
+func (m *UserMutation) ResetLog() {
+	m.log = nil
+	m.clearedlog = false
+	m.removedlog = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -2752,9 +2868,12 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.url != nil {
 		edges = append(edges, user.EdgeURL)
+	}
+	if m.log != nil {
+		edges = append(edges, user.EdgeLog)
 	}
 	return edges
 }
@@ -2769,15 +2888,24 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeLog:
+		ids := make([]ent.Value, 0, len(m.log))
+		for id := range m.log {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedurl != nil {
 		edges = append(edges, user.EdgeURL)
+	}
+	if m.removedlog != nil {
+		edges = append(edges, user.EdgeLog)
 	}
 	return edges
 }
@@ -2792,15 +2920,24 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeLog:
+		ids := make([]ent.Value, 0, len(m.removedlog))
+		for id := range m.removedlog {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedurl {
 		edges = append(edges, user.EdgeURL)
+	}
+	if m.clearedlog {
+		edges = append(edges, user.EdgeLog)
 	}
 	return edges
 }
@@ -2811,6 +2948,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
 	case user.EdgeURL:
 		return m.clearedurl
+	case user.EdgeLog:
+		return m.clearedlog
 	}
 	return false
 }
@@ -2829,6 +2968,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
 	case user.EdgeURL:
 		m.ResetURL()
+		return nil
+	case user.EdgeLog:
+		m.ResetLog()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"api/ent/logs"
 	"api/ent/predicate"
 	"api/ent/url"
 	"api/ent/user"
@@ -25,6 +26,7 @@ type UserQuery struct {
 	inters     []Interceptor
 	predicates []predicate.User
 	withURL    *URLQuery
+	withLog    *LogsQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -77,6 +79,28 @@ func (_q *UserQuery) QueryURL() *URLQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(url.Table, url.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.URLTable, user.URLColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryLog chains the current query on the "log" edge.
+func (_q *UserQuery) QueryLog() *LogsQuery {
+	query := (&LogsClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(logs.Table, logs.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.LogTable, user.LogColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -277,6 +301,7 @@ func (_q *UserQuery) Clone() *UserQuery {
 		inters:     append([]Interceptor{}, _q.inters...),
 		predicates: append([]predicate.User{}, _q.predicates...),
 		withURL:    _q.withURL.Clone(),
+		withLog:    _q.withLog.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -292,6 +317,17 @@ func (_q *UserQuery) WithURL(opts ...func(*URLQuery)) *UserQuery {
 		opt(query)
 	}
 	_q.withURL = query
+	return _q
+}
+
+// WithLog tells the query-builder to eager-load the nodes that are connected to
+// the "log" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithLog(opts ...func(*LogsQuery)) *UserQuery {
+	query := (&LogsClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withLog = query
 	return _q
 }
 
@@ -373,8 +409,9 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			_q.withURL != nil,
+			_q.withLog != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -402,6 +439,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadURL(ctx, query, nodes,
 			func(n *User) { n.Edges.URL = []*Url{} },
 			func(n *User, e *Url) { n.Edges.URL = append(n.Edges.URL, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withLog; query != nil {
+		if err := _q.loadLog(ctx, query, nodes,
+			func(n *User) { n.Edges.Log = []*Logs{} },
+			func(n *User, e *Logs) { n.Edges.Log = append(n.Edges.Log, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -434,6 +478,37 @@ func (_q *UserQuery) loadURL(ctx context.Context, query *URLQuery, nodes []*User
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_url" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadLog(ctx context.Context, query *LogsQuery, nodes []*User, init func(*User), assign func(*User, *Logs)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Logs(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.LogColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_log
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_log" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_log" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

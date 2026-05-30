@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	// Takma ad (alias) vermeden direkt paket yollarını yazıyoruz
@@ -42,6 +43,7 @@ func (c *RedirectController) Redirect() {
 
 	// İsteği gönder
 	status, _ := utils.SendRequest[dto.GeneralResponse[dto.UrlResponse]](request, "url/"+shortcode+"/"+password, "POST", c.Ctx, "")
+	log.Println("status", status)
 	if status.Code == 200 {
 		c.Ctx.Redirect(http.StatusFound, status.Data.LongUrl)
 	} else {

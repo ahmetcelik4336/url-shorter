@@ -49,7 +49,7 @@ func (c *BaseController) Prepare() {
 	languagesMap, _ := beego.AppConfig.GetSection("languages")
 	c.Data["supported_langs"] = languagesMap
 
-	if languagesMap[langStr] == "" && utf8.RuneCountInString(langStr) == 2 {
+	if languagesMap[langStr] == "" && utf8.RuneCountInString(langStr) == 2 && langStr != "qr" {
 		c.Redirect(helpers.Baseurl(defaultLang, ""), 302)
 	}
 

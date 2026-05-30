@@ -6,6 +6,7 @@ import (
 	"api/ent/logs"
 	"api/ent/predicate"
 	"api/ent/url"
+	"api/ent/user"
 	"context"
 	"errors"
 	"fmt"
@@ -106,9 +107,36 @@ func (_u *LogsUpdate) SetLogID(id int) *LogsUpdate {
 	return _u
 }
 
+// SetNillableLogID sets the "log" edge to the Url entity by ID if the given value is not nil.
+func (_u *LogsUpdate) SetNillableLogID(id *int) *LogsUpdate {
+	if id != nil {
+		_u = _u.SetLogID(*id)
+	}
+	return _u
+}
+
 // SetLog sets the "log" edge to the Url entity.
 func (_u *LogsUpdate) SetLog(v *Url) *LogsUpdate {
 	return _u.SetLogID(v.ID)
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (_u *LogsUpdate) SetUserID(id int) *LogsUpdate {
+	_u.mutation.SetUserID(id)
+	return _u
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (_u *LogsUpdate) SetNillableUserID(id *int) *LogsUpdate {
+	if id != nil {
+		_u = _u.SetUserID(*id)
+	}
+	return _u
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (_u *LogsUpdate) SetUser(v *User) *LogsUpdate {
+	return _u.SetUserID(v.ID)
 }
 
 // Mutation returns the LogsMutation object of the builder.
@@ -119,6 +147,12 @@ func (_u *LogsUpdate) Mutation() *LogsMutation {
 // ClearLog clears the "log" edge to the Url entity.
 func (_u *LogsUpdate) ClearLog() *LogsUpdate {
 	_u.mutation.ClearLog()
+	return _u
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (_u *LogsUpdate) ClearUser() *LogsUpdate {
+	_u.mutation.ClearUser()
 	return _u
 }
 
@@ -149,14 +183,6 @@ func (_u *LogsUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (_u *LogsUpdate) check() error {
-	if _u.mutation.LogCleared() && len(_u.mutation.LogIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Logs.log"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *LogsUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *LogsUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -164,9 +190,6 @@ func (_u *LogsUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *LogsUpdat
 }
 
 func (_u *LogsUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(logs.Table, logs.Columns, sqlgraph.NewFieldSpec(logs.FieldID, field.TypeInt))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -212,6 +235,35 @@ func (_u *LogsUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(url.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   logs.UserTable,
+			Columns: []string{logs.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   logs.UserTable,
+			Columns: []string{logs.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -317,9 +369,36 @@ func (_u *LogsUpdateOne) SetLogID(id int) *LogsUpdateOne {
 	return _u
 }
 
+// SetNillableLogID sets the "log" edge to the Url entity by ID if the given value is not nil.
+func (_u *LogsUpdateOne) SetNillableLogID(id *int) *LogsUpdateOne {
+	if id != nil {
+		_u = _u.SetLogID(*id)
+	}
+	return _u
+}
+
 // SetLog sets the "log" edge to the Url entity.
 func (_u *LogsUpdateOne) SetLog(v *Url) *LogsUpdateOne {
 	return _u.SetLogID(v.ID)
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (_u *LogsUpdateOne) SetUserID(id int) *LogsUpdateOne {
+	_u.mutation.SetUserID(id)
+	return _u
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (_u *LogsUpdateOne) SetNillableUserID(id *int) *LogsUpdateOne {
+	if id != nil {
+		_u = _u.SetUserID(*id)
+	}
+	return _u
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (_u *LogsUpdateOne) SetUser(v *User) *LogsUpdateOne {
+	return _u.SetUserID(v.ID)
 }
 
 // Mutation returns the LogsMutation object of the builder.
@@ -330,6 +409,12 @@ func (_u *LogsUpdateOne) Mutation() *LogsMutation {
 // ClearLog clears the "log" edge to the Url entity.
 func (_u *LogsUpdateOne) ClearLog() *LogsUpdateOne {
 	_u.mutation.ClearLog()
+	return _u
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (_u *LogsUpdateOne) ClearUser() *LogsUpdateOne {
+	_u.mutation.ClearUser()
 	return _u
 }
 
@@ -373,14 +458,6 @@ func (_u *LogsUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (_u *LogsUpdateOne) check() error {
-	if _u.mutation.LogCleared() && len(_u.mutation.LogIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Logs.log"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *LogsUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *LogsUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -388,9 +465,6 @@ func (_u *LogsUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *LogsUp
 }
 
 func (_u *LogsUpdateOne) sqlSave(ctx context.Context) (_node *Logs, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(logs.Table, logs.Columns, sqlgraph.NewFieldSpec(logs.FieldID, field.TypeInt))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -453,6 +527,35 @@ func (_u *LogsUpdateOne) sqlSave(ctx context.Context) (_node *Logs, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(url.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   logs.UserTable,
+			Columns: []string{logs.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   logs.UserTable,
+			Columns: []string{logs.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

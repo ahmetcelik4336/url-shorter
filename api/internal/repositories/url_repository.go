@@ -23,6 +23,7 @@ type UrlRepository interface {
 	FindByAlias(alias string) (*ent.Url, error)
 	FindByAliasWithId(id int, alias string) (*ent.Url, error)
 	Delete(id int) error
+	GetById(id int) (*ent.Url, error)
 }
 
 type urlRepository struct {
@@ -38,6 +39,12 @@ func NewUrlRepository(db *ent.Client, dialect string) UrlRepository {
 }
 func (r *urlRepository) Delete(id int) error {
 	return r.db.Url.DeleteOneID(id).Exec(context.Background())
+}
+func (r *urlRepository) GetById(id int) (*ent.Url, error) {
+	return r.db.Url.Query().
+		Where(url.IDEQ(id)).
+		WithUser().
+		First(context.Background())
 }
 func (r *urlRepository) FindByShortCode(short_code string) (*ent.Url, error) {
 
@@ -71,7 +78,6 @@ func (r *urlRepository) Create(userID int, short_code string, input dto.CreateUr
 		SetCreatedAt(time.Now()).
 		SetLongURL(input.LongUrl).
 		SetShortCode(short_code).
-		SetUserID(userID).
 		SetIsEncrypted(input.Password != "").
 		SetPassword(input.Password)
 
@@ -81,11 +87,15 @@ func (r *urlRepository) Create(userID int, short_code string, input dto.CreateUr
 		query.SetAlias(input.Alias)
 	}
 
+	if userID != 0 {
+		query.SetUserID(userID)
+	}
+
 	// EXPIRATION DATE KONTROLÜ:
 	// Şemanda bu da Nillable() olduğu için bunu da pointer olarak geçmeliyiz.
-	if !input.ExpirationDate.IsZero() {
-		query.SetExpirationDate(input.ExpirationDate)
-	}
+	//if !input.ExpirationDate.IsZero() {
+	query.SetExpirationDate(input.ExpirationDate)
+	//}
 
 	return query.Save(context.Background())
 }
@@ -110,9 +120,9 @@ func (r *urlRepository) CreateBulk(userID int, inputs []dto.CreateUrlRequest) ([
 			b.SetAlias(input.Alias)
 		}
 
-		if !input.ExpirationDate.IsZero() {
-			b.SetExpirationDate(input.ExpirationDate)
-		}
+		//if !input.ExpirationDate.IsZero() {
+		b.SetExpirationDate(input.ExpirationDate)
+		//}
 
 	}).Save(context.Background())
 }
@@ -149,9 +159,9 @@ func (r *urlRepository) Update(input dto.UpdateUrlRequest) (*ent.Url, error) {
 		query.SetAlias(input.Alias)
 	}
 
-	if !input.ExpirationDate.IsZero() {
-		query.SetExpirationDate(input.ExpirationDate)
-	}
+	//if !input.ExpirationDate.IsZero() {
+	query.SetExpirationDate(input.ExpirationDate)
+	//}
 
 	return query.Save(context.Background())
 }

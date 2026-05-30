@@ -13,14 +13,14 @@ import (
 
 type UrlService interface {
 	FindByShortCode(shortcode string) (*ent.Url, error)
-	Create(userID int, req dto.CreateUrlRequest) (*dto.GeneralResponse[any], error)
+	Create(userID int, req dto.CreateUrlRequest, type_ string) (*dto.GeneralResponse[dto.UrlResponse], error)
 	History(userID int) ([]*dto.UrlResponse, error)
 	Update(req dto.UpdateUrlRequest) (*dto.GeneralResponse[any], error)
 	Redirect(shortcodeOrAlias, password string) (*dto.GeneralResponse[dto.UrlResponse], error)
 	Bulkcreate(userID int, req []dto.CreateUrlRequest) (*dto.GeneralResponse[dto.UrlResponse], error)
 	HistoryById(userID int, id int) (*dto.UrlResponse, error)
 	Delete(id int) (*dto.GeneralResponse[any], error)
-	//FindByAlias(alias string) (*dto.GeneralResponse[any], error)
+	GetById(id int) (*ent.Url, error)
 }
 
 type urlService struct {
@@ -45,6 +45,9 @@ func (s *urlService) FindByAlias(alias string) (*dto.GeneralResponse[any], error
 	}
 */
 
+func (s *urlService) GetById(id int) (*ent.Url, error) {
+	return s.repo.GetById(id)
+}
 func (s *urlService) Delete(id int) (*dto.GeneralResponse[any], error) {
 
 	err := s.repo.Delete(id)
@@ -69,7 +72,7 @@ func (s *urlService) FindByShortCode(shortcode string) (*ent.Url, error) {
 	return url, nil
 }
 
-func (s *urlService) Create(userID int, req dto.CreateUrlRequest) (*dto.GeneralResponse[any], error) {
+func (s *urlService) Create(userID int, req dto.CreateUrlRequest, type_ string) (*dto.GeneralResponse[dto.UrlResponse], error) {
 	// 1. URL formatını kontrol et
 	u, err := netURL.ParseRequestURI(req.LongUrl) // req içindeki alan adının LongURL olduğunu varsayıyorum
 	if err != nil {
@@ -98,8 +101,9 @@ func (s *urlService) Create(userID int, req dto.CreateUrlRequest) (*dto.GeneralR
 		return nil, err
 	}
 
-	return &dto.GeneralResponse[any]{
+	return &dto.GeneralResponse[dto.UrlResponse]{
 		Status: urlResult.ShortCode != "",
+		Data:   dto.ToUrlResponse(urlResult, type_),
 	}, nil
 }
 
@@ -120,7 +124,7 @@ func (s *urlService) HistoryById(userID int, id int) (*dto.UrlResponse, error) {
 		return nil, err
 	}
 
-	return dto.ToUrlResponse(post), nil
+	return dto.ToUrlResponse(post, "url"), nil
 }
 
 func (s *urlService) Update(req dto.UpdateUrlRequest) (*dto.GeneralResponse[any], error) {

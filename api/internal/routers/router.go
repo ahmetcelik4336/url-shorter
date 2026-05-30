@@ -21,6 +21,10 @@ func Init(c *container.Container) {
 		LogService: c.LogService,
 	}, "post:Redirect")
 
+	beego.Router("/v1/create/:type", &controllers.UrlController{
+		Service: c.UrlService,
+	}, "post:CreateSite")
+
 	beego.Router("/v1/user/register", &controllers.AuthController{
 		Service: c.UserService,
 	}, "post:Register")
@@ -90,6 +94,16 @@ func Init(c *container.Container) {
 	beego.Router("/v1/setting/get/general", &controllers.SettingController{
 		Service: c.SettingService,
 	}, "get:GetGeneralSettings")
+
+	beego.Router("/v1/panel/TotalReading", &controllers.AnalysisController{
+		Service:    c.AnalysisService,
+		LogService: c.LogService,
+	}, "post:TotalReading")
+
+	beego.Router("/v1/panel/urlTrackAnalysis", &controllers.AnalysisController{
+		Service:    c.AnalysisService,
+		LogService: c.LogService,
+	}, "post:UrlTrackAnalysis")
 
 	// =========================
 	// JWT MIDDLEWARE

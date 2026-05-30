@@ -15,12 +15,6 @@ func GetPanelMenus(lang string, data dto.GeneralSettings) []dto.PanelMenu {
 			Url:        helpers.Baseurl(lang, "panel"),
 			SubsExists: false,
 			Order:      1,
-			Subs: []dto.PanelMenu{
-				{
-					Key:   "home2",
-					Title: "Home 1",
-				},
-			},
 		},
 		{
 			Key:        "profile",
@@ -35,6 +29,13 @@ func GetPanelMenus(lang string, data dto.GeneralSettings) []dto.PanelMenu {
 			Url:        helpers.Baseurl(lang, "panel/urls"),
 			SubsExists: false,
 			Order:      3,
+		},
+		{
+			Key:        "analysis",
+			Title:      i18n.Tr(lang, "urlTrackAnalysis"),
+			Url:        helpers.Baseurl(lang, "panel/url-track-analysis"),
+			SubsExists: false,
+			Order:      4,
 		},
 		{
 			Key:        "logout",

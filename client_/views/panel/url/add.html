@@ -54,6 +54,7 @@
             <div class='collapse py-2 {{ if .urls }} active show {{end}}' id="collapseExample2">
                 <div class="form-group">
                     <input type="datetime-local"
+                    step="1"
                     value='{{ if and .urls (ne .urls.ExpirationDate "Süresiz") }}{{ .urls.ExpirationDateFormatted }}{{ end }}' name="expiration" placeholder="" class="form-control">
                 </div>
             </div>

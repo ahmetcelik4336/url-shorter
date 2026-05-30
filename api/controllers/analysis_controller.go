@@ -87,3 +87,29 @@ func (c *AnalysisController) GetPerDayClick() {
 	c.Data["json"] = token
 	c.ServeJSON()
 }
+
+func (c *AnalysisController) TotalReading() {
+	userID := c.Ctx.Input.GetData("userID").(int)
+	totalRead, err := c.LogService.TotalReading(userID)
+	if err != nil {
+		c.CustomAbort(401, err.Error())
+		return
+	}
+	c.Data["json"] = &totalRead
+	c.ServeJSON()
+}
+
+func (c *AnalysisController) UrlTrackAnalysis() {
+	var req dto.UsageAnalysisRequest
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
+
+	}
+	userID := c.Ctx.Input.GetData("userID").(int)
+	totalRead, err := c.LogService.GetUrlTrackAnalysis(userID, &req)
+	if err != nil {
+		c.CustomAbort(401, err.Error())
+		return
+	}
+	c.Data["json"] = totalRead
+	c.ServeJSON()
+}

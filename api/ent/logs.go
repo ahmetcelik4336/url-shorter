@@ -5,6 +5,7 @@ package ent
 import (
 	"api/ent/logs"
 	"api/ent/url"
+	"api/ent/user"
 	"fmt"
 	"strings"
 	"time"
@@ -32,6 +33,7 @@ type Logs struct {
 	// The values are being populated by the LogsQuery when eager-loading is set.
 	Edges        LogsEdges `json:"edges"`
 	url_log_url  *int
+	user_log     *int
 	selectValues sql.SelectValues
 }
 
@@ -39,9 +41,11 @@ type Logs struct {
 type LogsEdges struct {
 	// Log holds the value of the log edge.
 	Log *Url `json:"log,omitempty"`
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // LogOrErr returns the Log value or an error if the edge
@@ -53,6 +57,17 @@ func (e LogsEdges) LogOrErr() (*Url, error) {
 		return nil, &NotFoundError{label: url.Label}
 	}
 	return nil, &NotLoadedError{edge: "log"}
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e LogsEdges) UserOrErr() (*User, error) {
+	if e.User != nil {
+		return e.User, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: user.Label}
+	}
+	return nil, &NotLoadedError{edge: "user"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -67,6 +82,8 @@ func (*Logs) scanValues(columns []string) ([]any, error) {
 		case logs.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		case logs.ForeignKeys[0]: // url_log_url
+			values[i] = new(sql.NullInt64)
+		case logs.ForeignKeys[1]: // user_log
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -126,6 +143,13 @@ func (_m *Logs) assignValues(columns []string, values []any) error {
 				_m.url_log_url = new(int)
 				*_m.url_log_url = int(value.Int64)
 			}
+		case logs.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_log", value)
+			} else if value.Valid {
+				_m.user_log = new(int)
+				*_m.user_log = int(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -142,6 +166,11 @@ func (_m *Logs) Value(name string) (ent.Value, error) {
 // QueryLog queries the "log" edge of the Logs entity.
 func (_m *Logs) QueryLog() *URLQuery {
 	return NewLogsClient(_m.config).QueryLog(_m)
+}
+
+// QueryUser queries the "user" edge of the Logs entity.
+func (_m *Logs) QueryUser() *UserQuery {
+	return NewLogsClient(_m.config).QueryUser(_m)
 }
 
 // Update returns a builder for updating this Logs.

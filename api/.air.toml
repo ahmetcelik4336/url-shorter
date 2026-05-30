@@ -6,3 +6,6 @@ tmp_dir = "tmp"
   bin = "tmp/api.exe"
   include_ext = ["go"]
   exclude_dir = ["tmp", "vendor"]
+  
+[log]
+  main_only = true

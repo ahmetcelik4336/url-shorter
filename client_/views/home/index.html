@@ -1,102 +1,269 @@
-
-
-    <!--============= Banner Section Starts Here =============-->
-    <section class="banner-section">
-        <div class="banner-bg bg_img" data-background="/static/assets/images/banner/banner-bg.jpg">
-            <div class="banner-bg-shape"><img src="/static/assets/images/banner/banner-shape.png" alt="banner"></div>
-            <div class="round-1">
-                <img src="/static/assets/images/banner/01.png" alt="banner">
-            </div>
-            <div class="round-2">
-                <img src="/static/assets/images/banner/02.png" alt="banner">
-            </div>
+<!--============= Banner Section Starts Here =============-->
+<section class="banner-section">
+    <div class="banner-bg bg_img" data-background="/static/assets/images/banner/banner-bg.jpg">
+        <div class="banner-bg-shape"><img src="/static/assets/images/banner/banner-shape.png" alt="banner"></div>
+        <div class="round-1">
+            <img src="/static/assets/images/banner/01.png" alt="banner">
         </div>
-        <div class="container">
-            <div class="banner-content">
-                <h1 class="title">{{.conf.AppName}}</h1>
-            </div>
-            <div class="banner-form-group">
-                <h3 class="subtitle">Shorten URL Is Just Simple</h3>
-               
-                <div class="banner-counter">
-                    <div class="counter-item">
-                        <h2 class="counter-title"><span class="counter">{{.clicked}}</span>+</h2>
-                        <p>Links clicked per day</p>
-                    </div>
-                    <div class="counter-item">
-                        <h2 class="counter-title"><span class="counter">{{.urltotal}}</span>+</h2>
-                        <p>Shortened links in total</p>
-                    </div>
-                    <div class="counter-item">
-                        <h2 class="counter-title"><span class="counter">{{.usersCount}}</span>+</h2>
-                        <p>Happy users registered</p>
-                    </div>
-                </div>
-            </div>
+        <div class="round-2">
+            <img src="/static/assets/images/banner/02.png" alt="banner">
         </div>
-    </section>
-    <!--============= Banner Section Ends Here =============-->
+    </div>
+    <style>
+        .banner-section {
+            position: relative;
+            padding-top: 150px;
+            padding-bottom: 115px;
+        }
 
+        .banner-form-group .nav-link,
+        .banner-btn {
+            background-color: rgb(240, 88, 114);
+            color: white;
+        }
 
-    <!--============= Why Section Starts Here =============-->
-    <section class="why-section padding-bottom padding-top">
-        <div class="container">
+        .banner-form-group .nav-link i {
+            color: white
+        }
+
+        .banner-form-group .nav-link.active {
+            background-color: white;
+            color: black;
+        }
+
+        .banner-form-group .nav-link.active i {
+            color: rgb(240, 88, 114);
+        }
+
+        .banner-form-group .nav-item {
+            padding: 0;
+        }
+
+        .banner-content .tab-content label {
+            color: black !important
+        }
+
+        .banner-counter * {
+            color: black;
+        }
+    </style>
+    <div class="container">
+        <div class="banner-content">
             <div class="row">
-                <div class="col-lg-6 mt-lg-100">
-                    <div class="section-header left-style mb-lg-0 sticky-header mb-low ml-0">
-                        <h2 class="title">
-                            Why Join Us?
-                        </h2>
-                        <p>Cortaly is a completely free tool where you can create short links, which apart from being free, you get paid! So, now you can make money from home, when managing and protecting your links.</p>
-                        <a href="#0" class="custom-button active mt-2">Create Your Account</a>
+                <div class="col-12 col-lg-6">
+                    <div style="display: flex;flex-direction: column;align-items: center;justify-content: center;"
+                        class="h-100">
+                        <h1 style="font-size: 80px;color: white;" class="title">{{.conf.AppName}}</h1>
+                        <h2 style="font-size: 22px;color: white;">Welcome To {{.conf.AppName}}! Shorten URL Is Just Simple</h2>
+                        <a href='{{baseurl .slug "auth/register"}}' class="banner-btn my-3 rounded p-2">Create
+                            Account</a>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="choose-item">
-                        <div class="choose-thumb">
-                            <img src="/static/assets/images/why/01.png" alt="why">
-                        </div>
-                        <div class="choose-content">
-                            <h5 class="title">JOIN OUR NETWORK</h5>
-                            <p>Signup for an account in just one minute, shorten URLs and 
-                                sharing your links to everywhere.</p>
-                        </div>
-                    </div>
-                
-                  
-                </div>
-            </div>
-        </div>
-    </section>
- 
-    <section class="how-section padding-top padding-bottom pt-md-half pb-max-lg-0">
-        <div class="container">
-            <div class="section-header mb-low">
-                <h2 class="title mb-0">How to start</h2>
-            </div>
-            <div class="row justify-content-center mb--40">
-                <div class="col-lg-4 col-md-6 col-sm-10">
-                    <div class="how-item">
-                        <div class="how-thumb">
-                            <img src="/static/assets/images/how/how1.png" alt="how">
-                        </div>
-                        <div class="how-content">
-                            <h6 class="title">CREATE AN ACCOUNT</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-10">
-                    <div class="how-item">
-                        <div class="how-thumb">
-                            <img src="/static/assets/images/how/how2.png" alt="how">
-                        </div>
-                        <div class="how-content">
-                            <h6 class="title">SHORTEN YOUR LINK</h6>
-                        </div>
-                    </div>
-                </div>
-               
-            </div>
-        </div>
-    </section>
+                <div class="col-12 col-lg-6">
+                    <div class="banner-form-group p-0">
 
+                        <ul class="nav nav-pills nav-fill" style="border: none !important;" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <span class="nav-link active h-100" id="home-tab" data-toggle="tab" data-target="#home"
+                                    type="button" role="tab" aria-controls="home" aria-selected="true"><i
+                                        class="fas fa-link"></i>&nbsp;Shorten
+                                    Link</span>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <span class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile"
+                                    type="button" role="tab" aria-controls="profile" aria-selected="false"><i
+                                        class="fas fa-qrcode"></i>&nbsp;Generate
+                                    Qr</span>
+                            </li>
+
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active p-3 my-2" id="home" role="tabpanel"
+                                aria-labelledby="home-tab">
+                                <form action='{{baseurl .slug "home/url/generate"}}' method="post" id="formUrl">
+                                    <div id="urlResult"></div>
+                                    <div class="mb-3 text-left">
+                                        <label for="">Long Url *</label>
+                                        <input type="url" name="url" id="" required>
+                                    </div>
+
+                                    <div class="mb-5 text-left">
+                                        <label for="">Alias</label>
+                                        <input type="text" name="alias" id="">
+                                    </div>
+
+                                    <div class=" text-left">
+                                        <button class="w-100 btn"
+                                            style="background-color: rgb(254,122,106);color: white !important;">
+                                            <i class="fas fa-link"
+                                                style="background-color: rgb(254,122,106);color: white !important;"></i>&nbsp;Shorten
+                                            Link</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade p-3 my-2" id="profile" role="tabpanel"
+                                aria-labelledby="profile-tab">
+
+                                <form action='{{baseurl .slug "home/qr/generate"}}' method="post" id="formQr">
+                                    <div id="qrResult"></div>
+                                    <div class="mb-3 text-left">
+                                        <label for="">Long Url *</label>
+                                        <input type="url" name="url" id="" required>
+                                    </div>
+
+                                    <div class="mb-5 text-left">
+                                        <label for="">Alias</label>
+                                        <input type="text" name="alias" id="">
+                                    </div>
+
+                                    <div class=" text-left">
+                                        <button class="w-100 btn"
+                                            style="background-color: rgb(254,122,106);color: white !important;">
+                                            <i class="fas fa-qrcode"
+                                                style="background-color: rgb(254,122,106);color: white !important;"></i>&nbsp;Generate
+                                            Qr</button>
+                                    </div>
+                                </form>
+
+
+                            </div>
+
+                        </div>
+                        <style>
+                            .banner-counter h2,
+                            .banner-counter span {
+                                color: rgb(240, 88, 114) !important;
+                            }
+                        </style>
+                        <div class="banner-counter row mt-4">
+                            <div class="counter-item col-12 col-lg-3">
+                                <h2 class="counter-title" sy><span class="counter">{{.clicked}}</span>+</h2>
+                                <p class="text-muted">Links clicked per day</p>
+                            </div>
+                            <div class="counter-item col-12 col-lg-3">
+                                <h2 class="counter-title"><span class="counter">{{.urltotal}}</span>+</h2>
+                                <p class="text-muted">Shortened links in total</p>
+                            </div>
+                            <div class="counter-item col-12 col-lg-3">
+                                <h2 class="counter-title"><span class="counter">{{.usersCount}}</span>+</h2>
+                                <p class="text-muted">Happy users registered</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+<!--============= Banner Section Ends Here =============-->
+
+
+<!--============= Why Section Starts Here =============-->
+<section class="why-section padding-bottom padding-top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mt-lg-100">
+                <div class="section-header left-style mb-lg-0 sticky-header mb-low ml-0">
+                    <h2 class="title">
+                        Why Join Us?
+                    </h2>
+                    <p>Cortaly is a completely free tool where you can create short links, which apart from being free,
+                        you get paid! So, now you can make money from home, when managing and protecting your links.</p>
+                    <a href="#0" class="custom-button active mt-2">Create Your Account</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="choose-item">
+                    <div class="choose-thumb">
+                        <img src="/static/assets/images/why/01.png" alt="why">
+                    </div>
+                    <div class="choose-content">
+                        <h5 class="title">JOIN OUR NETWORK</h5>
+                        <p>Signup for an account in just one minute, shorten URLs and
+                            sharing your links to everywhere.</p>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="how-section padding-top padding-bottom pt-md-half pb-max-lg-0">
+    <div class="container">
+        <div class="section-header mb-low">
+            <h2 class="title mb-0">How to start</h2>
+        </div>
+        <div class="row justify-content-center mb--40">
+            <div class="col-lg-4 col-md-6 col-sm-10">
+                <div class="how-item">
+                    <div class="how-thumb">
+                        <img src="/static/assets/images/how/how1.png" alt="how">
+                    </div>
+                    <div class="how-content">
+                        <h6 class="title">CREATE AN ACCOUNT</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-10">
+                <div class="how-item">
+                    <div class="how-thumb">
+                        <img src="/static/assets/images/how/how2.png" alt="how">
+                    </div>
+                    <div class="how-content">
+                        <h6 class="title">SHORTEN YOUR LINK</h6>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- CSS -->
+<link rel="stylesheet" href="/static/js/waitMe.min.css">
+<!-- JS (jQuery'den sonra eklenmelidir) -->
+<script src="/static/js/waitMe.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        //
+        $('#formUrl').submit(function (e) {
+            e.preventDefault();
+            $(".banner-form-group").waitMe({
+                effect: 'bounce', // Animasyon tipi: 'roundBounce', 'pulse', 'ios', 'strike' vb.
+                text: 'Lütfen bekleyin...',
+                bg: 'rgba(255,255,255,0.7)', // Arka plan rengi
+                color: '#000' // Spinner ve yazı rengi
+            });
+            const el=$(this)
+            $('#urlResult').html("")
+            $('#qrResult').html("")
+            $.post($(this).attr('action'), $(this).serialize(), function (res) {
+                $('.banner-form-group').waitMe('hide');
+                $('#urlResult').html(res)
+                el[0].reset()
+            })
+        })
+
+        $('#formQr').submit(function (e) {
+            e.preventDefault();
+            $(".banner-form-group").waitMe({
+                effect: 'bounce', // Animasyon tipi: 'roundBounce', 'pulse', 'ios', 'strike' vb.
+                text: 'Lütfen bekleyin...',
+                bg: 'rgba(255,255,255,0.7)', // Arka plan rengi
+                color: '#000' // Spinner ve yazı rengi
+            });
+            $('#urlResult').html("")
+            $('#qrResult').html("")
+            const el=$(this)
+            $.post($(this).attr('action'), $(this).serialize(), function (res) {
+                $('.banner-form-group').waitMe('hide');
+                $('#qrResult').html(res)
+                el[0].reset()
+            })
+        })
+    })
+</script>

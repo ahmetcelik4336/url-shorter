@@ -15,6 +15,19 @@ type UrlCountAnalysisResponse struct {
 	Count int `json:"count"`
 }
 
+type UrlTrackAnalysisResponse struct {
+	Count int    `json:"count"`
+	Type  string `json:"type"`
+	Title string `json:"title"`
+}
+type GetLastReadingResponse struct {
+	LastReading string
+}
+type UrlTrackAnalysisResponseBatch struct {
+	Analysis    []*UrlTrackAnalysisResponse
+	LastReading *GetLastReadingResponse
+}
+
 type UsageAnalysisResponse struct {
 	Date  string `json:"date"`
 	Count int    `json:"count"`

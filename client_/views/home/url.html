@@ -1,0 +1,31 @@
+<div class="alert {{ if .status }} alert-success {{else}} alert-danger {{end}} text-left"
+    style="display: flex;flex-direction: column;">
+    <b>
+        {{if .status}}
+        Short Url Generate Successfuly
+        {{else}}
+        {{.message}}
+        {{end}}
+    </b>
+    {{ if .status}}
+    <div style="display: flex;flex-direction: columns;align-items: center;justify-content: space-between;">
+        <small>{{.url.ResultUrl}}</small>
+        <div>
+            <button onclick="copyToClipboard('{{.url.ResultUrl}}',this)" type="button"
+                class="btn btn-light">Copy</button>
+        </div>
+    </div>
+    {{end}}
+</div>
+
+<script>
+    async function copyToClipboard(text, event) {
+        try {
+            await navigator.clipboard.writeText(text);
+            console.log('Text copied to clipboard');
+            $(event).html('Copied')
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+        }
+    }
+</script>

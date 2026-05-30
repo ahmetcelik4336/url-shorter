@@ -20,6 +20,11 @@ func init() {
 			ctx.Input.SetData("lang", lang)
 		}),
 
+		beego.NSNamespace("/home",
+			beego.NSRouter("/url/generate", &controllers.MainController{}, "post:UrlShortenHandler"),
+			beego.NSRouter("/qr/generate", &controllers.MainController{}, "post:QrGenerateHandler"),
+		),
+
 		beego.NSNamespace("/auth",
 			beego.NSRouter("/login", &controllers.AuthController{}, "get:Login;post:LoginHandler"),
 			beego.NSRouter("/register", &controllers.AuthController{}, "get:Register;post:RegisterHandler"),
@@ -38,6 +43,7 @@ func init() {
 			beego.NSRouter("/urls/qr/:id", &controllers.PanelController{}, "get:Qr"),
 			beego.NSRouter("/urls/qrcreate/:id", &controllers.PanelController{}, "get:QrCreate"),
 			beego.NSRouter("/urls/logoUpload", &controllers.PanelController{}, "post:UploadLogo"),
+			beego.NSRouter("/url-track-analysis", &controllers.UrlTrackAnalysis{}, "get:Get"),
 		),
 	)
 	beego.AddNamespace(ns)

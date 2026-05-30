@@ -6,6 +6,7 @@ import (
 	"api/ent/logs"
 	"api/ent/predicate"
 	"api/ent/url"
+	"api/ent/user"
 	"context"
 	"fmt"
 	"math"
@@ -24,6 +25,7 @@ type LogsQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Logs
 	withLog    *URLQuery
+	withUser   *UserQuery
 	withFKs    bool
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -77,6 +79,28 @@ func (_q *LogsQuery) QueryLog() *URLQuery {
 			sqlgraph.From(logs.Table, logs.FieldID, selector),
 			sqlgraph.To(url.Table, url.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, logs.LogTable, logs.LogColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (_q *LogsQuery) QueryUser() *UserQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(logs.Table, logs.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, logs.UserTable, logs.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -277,6 +301,7 @@ func (_q *LogsQuery) Clone() *LogsQuery {
 		inters:     append([]Interceptor{}, _q.inters...),
 		predicates: append([]predicate.Logs{}, _q.predicates...),
 		withLog:    _q.withLog.Clone(),
+		withUser:   _q.withUser.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -292,6 +317,17 @@ func (_q *LogsQuery) WithLog(opts ...func(*URLQuery)) *LogsQuery {
 		opt(query)
 	}
 	_q.withLog = query
+	return _q
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *LogsQuery) WithUser(opts ...func(*UserQuery)) *LogsQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withUser = query
 	return _q
 }
 
@@ -374,11 +410,12 @@ func (_q *LogsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Logs, e
 		nodes       = []*Logs{}
 		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			_q.withLog != nil,
+			_q.withUser != nil,
 		}
 	)
-	if _q.withLog != nil {
+	if _q.withLog != nil || _q.withUser != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -411,6 +448,12 @@ func (_q *LogsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Logs, e
 			return nil, err
 		}
 	}
+	if query := _q.withUser; query != nil {
+		if err := _q.loadUser(ctx, query, nodes, nil,
+			func(n *Logs, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -439,6 +482,38 @@ func (_q *LogsQuery) loadLog(ctx context.Context, query *URLQuery, nodes []*Logs
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "url_log_url" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (_q *LogsQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Logs, init func(*Logs), assign func(*Logs, *User)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Logs)
+	for i := range nodes {
+		if nodes[i].user_log == nil {
+			continue
+		}
+		fk := *nodes[i].user_log
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_log" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

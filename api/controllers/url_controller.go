@@ -28,8 +28,28 @@ func (c *UrlController) Create() {
 		c.CustomAbort(400, "invalid request")
 		return
 	}
+	userId := c.Ctx.Input.GetData("userID").(int)
+	urlResult, err := c.Service.Create(userId, req, "url")
+	if err != nil {
+		c.Data["json"] = dto.GeneralResponse[any]{
+			Status:  false,
+			Message: err.Error(),
+		}
+		c.ServeJSON()
+		return
+	}
+	c.Data["json"] = urlResult
+	c.ServeJSON()
+}
 
-	urlResult, err := c.Service.Create(c.Ctx.Input.GetData("userID").(int), req)
+func (c *UrlController) CreateSite() {
+	var req dto.CreateUrlRequest
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
+		c.CustomAbort(400, "invalid request")
+		return
+	}
+	type_ := c.Ctx.Input.Param(":type")
+	urlResult, err := c.Service.Create(0, req, type_)
 	if err != nil {
 		c.Data["json"] = dto.GeneralResponse[any]{
 			Status:  false,

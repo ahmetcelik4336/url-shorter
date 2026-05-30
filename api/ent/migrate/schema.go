@@ -16,7 +16,8 @@ var (
 		{Name: "referer", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "type", Type: field.TypeString},
-		{Name: "url_log_url", Type: field.TypeInt},
+		{Name: "url_log_url", Type: field.TypeInt, Nullable: true},
+		{Name: "user_log", Type: field.TypeInt, Nullable: true},
 	}
 	// LogsTable holds the schema information for the "logs" table.
 	LogsTable = &schema.Table{
@@ -28,7 +29,13 @@ var (
 				Symbol:     "logs_urls_log_url",
 				Columns:    []*schema.Column{LogsColumns[6]},
 				RefColumns: []*schema.Column{UrlsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "logs_users_log",
+				Columns:    []*schema.Column{LogsColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}
@@ -66,7 +73,7 @@ var (
 		{Name: "is_encrypted", Type: field.TypeBool, Nullable: true, Default: false},
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "expiration_date", Type: field.TypeTime, Nullable: true},
-		{Name: "user_url", Type: field.TypeInt},
+		{Name: "user_url", Type: field.TypeInt, Nullable: true},
 	}
 	// UrlsTable holds the schema information for the "urls" table.
 	UrlsTable = &schema.Table{
@@ -78,7 +85,7 @@ var (
 				Symbol:     "urls_users_url",
 				Columns:    []*schema.Column{UrlsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}
@@ -107,5 +114,6 @@ var (
 
 func init() {
 	LogsTable.ForeignKeys[0].RefTable = UrlsTable
+	LogsTable.ForeignKeys[1].RefTable = UsersTable
 	UrlsTable.ForeignKeys[0].RefTable = UsersTable
 }

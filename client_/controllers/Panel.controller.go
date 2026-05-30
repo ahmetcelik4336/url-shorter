@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"shared/helpers"
@@ -94,13 +95,13 @@ func (c *PanelController) UrlSaveHandler() {
 	var action, method string
 	if id == "" {
 		req = &dto.CreateUrlRequest{}
-		action = "create"
+		action = "panel/create"
 		method = "POST"
 	} else {
 		req = &dto.UpdateUrlRequest{
 			ID: idd,
 		}
-		action = "update"
+		action = "panel/update"
 		method = "PUT"
 	}
 
@@ -111,7 +112,9 @@ func (c *PanelController) UrlSaveHandler() {
 		return
 	}
 
-	status, err := utils.SendRequest[dto.GeneralResponse[any]](req, "panel/"+action, method, c.Ctx, tokenn)
+	log.Println(req)
+
+	status, err := utils.SendRequest[dto.GeneralResponse[any]](req, action, method, c.Ctx, tokenn)
 	flash := beego.NewFlash()
 	if status.Status {
 		flash.Data["Success"] = "Başarılı"
@@ -276,7 +279,6 @@ func (c *PanelController) QrCreate() {
 		return
 	}
 
-	// Tarayıcıya bunun bir PNG resmi olduğunu söylüyoruz ve içeriği basıyoruz
 	c.Ctx.Output.Header("Content-Type", "image/png")
 	c.Ctx.Output.Header("Content-Length", fmt.Sprintf("%d", len(png)))
 	c.Ctx.Output.Body(png)

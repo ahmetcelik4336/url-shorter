@@ -362,6 +362,22 @@ func (c *LogsClient) QueryLog(_m *Logs) *URLQuery {
 	return query
 }
 
+// QueryUser queries the user edge of a Logs.
+func (c *LogsClient) QueryUser(_m *Logs) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(logs.Table, logs.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, logs.UserTable, logs.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *LogsClient) Hooks() []Hook {
 	return c.hooks.Logs
@@ -935,6 +951,22 @@ func (c *UserClient) QueryURL(_m *User) *URLQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(url.Table, url.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.URLTable, user.URLColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLog queries the log edge of a User.
+func (c *UserClient) QueryLog(_m *User) *LogsQuery {
+	query := (&LogsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(logs.Table, logs.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.LogTable, user.LogColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

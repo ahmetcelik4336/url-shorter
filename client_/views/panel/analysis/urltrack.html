@@ -1,0 +1,157 @@
+<div class="container">
+    {{template "panel/menu.html" .}}
+
+   
+
+    <div class="row my-3">
+        {{range $key, $name := .data}}
+        <div class="col-12 col-lg-3">
+            <div class="border p-2 rounded" style="display: flex;flex-direction: row;align-items: center;justify-content: space-around;">
+                <i class="fas fa-chart-line" style="font-size: 30px;"></i>
+                <div style="display: flex;flex-direction: column; align-items: center;">
+                    <b>{{$name.Title}}</b>
+                    <small>{{$name.Count}}</small>
+                </div>
+            </div>
+        </div>
+        {{end}}
+
+        <div class="col-12 col-lg-3">
+            <div class="border p-2 rounded" style="display: flex;flex-direction: row;align-items: center;justify-content: space-around;">
+                <i class="fas fa-chart-line" style="font-size: 30px;"></i>
+                <div style="display: flex;flex-direction: column; align-items: center;">
+                    <b>Last Reading</b>
+                    <small>{{.LastReading}}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="collapse-area" class="mx-auto mb-4">
+        <div class="my-2">
+            <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+                aria-controls="collapseExample"
+                class="active"
+                style="display: flex;flex-direction: row;justify-content: flex-end;align-items: center;gap: 10px;">
+                <b>Filters</b>
+
+                <div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </a>
+
+        </div>
+        <div class="collapse active show" id="collapseExample">
+            <form action="" method="get">
+                <div class="row">
+
+                    <div class="col-12 col-lg-5">
+                        <label for="" class="m-0">Start Date</label>
+                        <input type="date" name="start" value="{{.start}}" class="form-control form-control-sm">
+                    </div>
+
+                    <div class="col-12 col-lg-5">
+                        <label for="" class="m-0">End Date</label>
+                        <input type="date" name="end" value="{{.end}}" class="form-control form-control-sm">
+                    </div>
+
+                    <div class="col-12 col-lg-2 d-flex align-items-end">
+                        <button class="btn btn-success btn-sm p-1" style="height: 39px;"><i
+                                class="fas fa-filter"></i></button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="chart"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    #chart {
+        max-width: 800px;
+        margin: 35px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
+<script>
+    // 1. Go'dan gelen veriyi al
+    const rawData = JSON.parse({{.graphic }});
+    console.log("Go'dan Gelen Ham Veri:", rawData);
+
+    // 2. Veriyi ESKİDEN YENİYE sıralıyoruz (Grafik çizgisinin doğru akması için)
+    // Tarih string kıyaslaması (2026-04-28 < 2026-04-29) düzgün çalışır.
+    const sortedData = rawData.sort((a, b) => {
+        return a.date.localeCompare(b.date);
+    });
+
+    // 3. ApexCharts 'category' tipi için X ve Y dizilerini ayırıyoruz
+    const categories = sortedData.map(item => {
+        // İstersen burada tarihi daha şık gösterebilirsin. 
+        // Örn: "2026-04-28" -> "28 Nis" yapmak için:
+        const parts = item.date.split('-');
+        const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+        if (parts.length === 3) {
+            return `${parseInt(parts[2], 10)} ${aylar[parseInt(parts[1], 10) - 1]}`;
+        }
+        return item.date; // Ayrıştırma başarısız olursa ham hali kalsın
+    });
+
+    const counts = sortedData.map(item => Number(item.count));
+
+    console.log("X Ekseni Etiketleri (Kategoriler):", categories);
+    console.log("Y Ekseni Değerleri:", counts);
+
+    // 4. Grafik Seçenekleri
+    const options = {
+        chart: {
+            type: 'line',
+            height: 350,
+            zoom: { enabled: false },
+            toolbar: { show: true }
+        },
+        series: [{
+            name: 'Okutma Sayısı',
+            data: counts // Sadece sayı dizisi (Y ekseni)
+        }],
+        colors: ['#00E396'],
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+        title: {
+            text: 'Günlük URL Takip Analizi',
+            align: 'left',
+            style: { fontSize: '18px', color: '#333' }
+        },
+        // KRİTİK DEĞİŞİKLİK BURASI: type 'category' yapıldı
+        xaxis: {
+            type: 'category',
+            categories: categories, // Dönüştürülmüş ["28 Nis", "29 Nis", "30 Nis"] dizisi
+            labels: {
+                style: { colors: '#a8a8a8', fontSize: '12px' }
+            }
+        },
+        yaxis: {
+            title: { text: 'Toplam Okutma' },
+            labels: {
+                formatter: function (val) { return Math.floor(val); }, // Ondalık sayıları engeller
+                style: { colors: '#a8a8a8' }
+            }
+        },
+        tooltip: {
+            shared: true,
+            intersect: false
+        },
+        grid: { borderColor: '#f1f1f1' }
+    };
+
+    // Grafiği çizdir
+    const chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+</script>

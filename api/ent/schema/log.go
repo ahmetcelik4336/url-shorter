@@ -27,9 +27,14 @@ func (Logs) Edges() []ent.Edge {
 		edge.From("log", Url.Type).
 			Ref("log_url").
 			Unique().
-			Required().
 			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
+				OnDelete: entsql.SetNull,
+			}),
+		edge.From("user", User.Type).
+			Ref("log").
+			Unique().
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.SetNull,
 			}),
 	}
 }

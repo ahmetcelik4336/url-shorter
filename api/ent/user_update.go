@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"api/ent/logs"
 	"api/ent/predicate"
 	"api/ent/url"
 	"api/ent/user"
@@ -86,6 +87,21 @@ func (_u *UserUpdate) AddURL(v ...*Url) *UserUpdate {
 	return _u.AddURLIDs(ids...)
 }
 
+// AddLogIDs adds the "log" edge to the Logs entity by IDs.
+func (_u *UserUpdate) AddLogIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddLogIDs(ids...)
+	return _u
+}
+
+// AddLog adds the "log" edges to the Logs entity.
+func (_u *UserUpdate) AddLog(v ...*Logs) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddLogIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdate) Mutation() *UserMutation {
 	return _u.mutation
@@ -110,6 +126,27 @@ func (_u *UserUpdate) RemoveURL(v ...*Url) *UserUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveURLIDs(ids...)
+}
+
+// ClearLog clears all "log" edges to the Logs entity.
+func (_u *UserUpdate) ClearLog() *UserUpdate {
+	_u.mutation.ClearLog()
+	return _u
+}
+
+// RemoveLogIDs removes the "log" edge to Logs entities by IDs.
+func (_u *UserUpdate) RemoveLogIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveLogIDs(ids...)
+	return _u
+}
+
+// RemoveLog removes "log" edges to Logs entities.
+func (_u *UserUpdate) RemoveLog(v ...*Logs) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveLogIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -221,6 +258,51 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.LogCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LogTable,
+			Columns: []string{user.LogColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(logs.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedLogIDs(); len(nodes) > 0 && !_u.mutation.LogCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LogTable,
+			Columns: []string{user.LogColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(logs.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.LogIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LogTable,
+			Columns: []string{user.LogColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(logs.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -300,6 +382,21 @@ func (_u *UserUpdateOne) AddURL(v ...*Url) *UserUpdateOne {
 	return _u.AddURLIDs(ids...)
 }
 
+// AddLogIDs adds the "log" edge to the Logs entity by IDs.
+func (_u *UserUpdateOne) AddLogIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddLogIDs(ids...)
+	return _u
+}
+
+// AddLog adds the "log" edges to the Logs entity.
+func (_u *UserUpdateOne) AddLog(v ...*Logs) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddLogIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdateOne) Mutation() *UserMutation {
 	return _u.mutation
@@ -324,6 +421,27 @@ func (_u *UserUpdateOne) RemoveURL(v ...*Url) *UserUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveURLIDs(ids...)
+}
+
+// ClearLog clears all "log" edges to the Logs entity.
+func (_u *UserUpdateOne) ClearLog() *UserUpdateOne {
+	_u.mutation.ClearLog()
+	return _u
+}
+
+// RemoveLogIDs removes the "log" edge to Logs entities by IDs.
+func (_u *UserUpdateOne) RemoveLogIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveLogIDs(ids...)
+	return _u
+}
+
+// RemoveLog removes "log" edges to Logs entities.
+func (_u *UserUpdateOne) RemoveLog(v ...*Logs) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveLogIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -458,6 +576,51 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(url.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.LogCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LogTable,
+			Columns: []string{user.LogColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(logs.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedLogIDs(); len(nodes) > 0 && !_u.mutation.LogCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LogTable,
+			Columns: []string{user.LogColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(logs.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.LogIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LogTable,
+			Columns: []string{user.LogColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(logs.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

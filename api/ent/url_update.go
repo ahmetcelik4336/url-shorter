@@ -145,6 +145,14 @@ func (_u *URLUpdate) SetUserID(id int) *URLUpdate {
 	return _u
 }
 
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (_u *URLUpdate) SetNillableUserID(id *int) *URLUpdate {
+	if id != nil {
+		_u = _u.SetUserID(*id)
+	}
+	return _u
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *URLUpdate) SetUser(v *User) *URLUpdate {
 	return _u.SetUserID(v.ID)
@@ -235,9 +243,6 @@ func (_u *URLUpdate) check() error {
 		if err := url.LongURLValidator(v); err != nil {
 			return &ValidationError{Name: "long_url", err: fmt.Errorf(`ent: validator failed for field "Url.long_url": %w`, err)}
 		}
-	}
-	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Url.user"`)
 	}
 	return nil
 }
@@ -500,6 +505,14 @@ func (_u *URLUpdateOne) SetUserID(id int) *URLUpdateOne {
 	return _u
 }
 
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (_u *URLUpdateOne) SetNillableUserID(id *int) *URLUpdateOne {
+	if id != nil {
+		_u = _u.SetUserID(*id)
+	}
+	return _u
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *URLUpdateOne) SetUser(v *User) *URLUpdateOne {
 	return _u.SetUserID(v.ID)
@@ -603,9 +616,6 @@ func (_u *URLUpdateOne) check() error {
 		if err := url.LongURLValidator(v); err != nil {
 			return &ValidationError{Name: "long_url", err: fmt.Errorf(`ent: validator failed for field "Url.long_url": %w`, err)}
 		}
-	}
-	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Url.user"`)
 	}
 	return nil
 }
