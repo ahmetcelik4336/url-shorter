@@ -3,7 +3,6 @@ package controllers
 import (
 	"api/internal/services"
 	"encoding/json"
-	"log"
 	dto "shared/models"
 
 	beego "github.com/beego/beego/v2/server/web"
@@ -44,8 +43,11 @@ func (c *RedirectController) Redirect() {
 			return
 		}
 		url, _ := c.Service.GetById(response.Data.Id)
-		log.Println("err", url)
-		_, err := c.LogService.Create(response.Data.Id, url.Edges.User.ID, req)
+		userid := 0
+		if url != nil {
+			userid = url.Edges.User.ID
+		}
+		_, err := c.LogService.Create(response.Data.Id, userid, req)
 
 		if err == nil {
 			c.Data["json"] = response
