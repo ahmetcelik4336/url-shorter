@@ -18,7 +18,11 @@ func (c *UrlTrackAnalysis) Get() {
 
 	result, _ := utils.SendRequest[dto.UrlTrackAnalysisResponseBatch](nil, "panel/TotalReading", "POST", c.Ctx, "")
 	c.Data["data"] = result.Analysis
-	c.Data["LastReading"] = result.LastReading.LastReading
+	c.Data["LastReading"] = "Henüz okuma yok"
+	if result.LastReading != nil {
+		c.Data["LastReading"] = result.LastReading.LastReading
+	}
+
 	req := dto.UsageAnalysisRequest{}
 	if err := c.ParseForm(&req); err != nil {
 		c.Ctx.Output.SetStatus(400)
