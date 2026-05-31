@@ -44,6 +44,7 @@ func init() {
 			beego.NSRouter("/urls/qrcreate/:id", &controllers.PanelController{}, "get:QrCreate"),
 			beego.NSRouter("/urls/logoUpload", &controllers.PanelController{}, "post:UploadLogo"),
 			beego.NSRouter("/url-track-analysis", &controllers.UrlTrackAnalysis{}, "get:Get"),
+			beego.NSRouter("/log-datatable", &controllers.UrlTrackAnalysis{}, "post:LogDatatable"),
 		),
 	)
 	beego.AddNamespace(ns)

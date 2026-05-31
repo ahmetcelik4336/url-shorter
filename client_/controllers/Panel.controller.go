@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"shared/helpers"
@@ -111,9 +110,6 @@ func (c *PanelController) UrlSaveHandler() {
 		c.ServeJSON()
 		return
 	}
-
-	log.Println(req)
-
 	status, err := utils.SendRequest[dto.GeneralResponse[any]](req, action, method, c.Ctx, tokenn)
 	flash := beego.NewFlash()
 	if status.Status {
@@ -318,9 +314,6 @@ func (c *PanelController) UploadLogo() {
 		c.ServeJSON()
 		return
 	}
-
-	// 6. Başarılı ise front-end'e dosya yolunu dön
-	// Dönen bu webPath'i istersen Ent ORM ile veri tabanındaki ilgili URL kaydına yazabilirsin.
 	webPath := "/" + uploadPath
 	c.Data["json"] = map[string]interface{}{"success": true, "logo_url": webPath, "message": "Logo başarıyla yüklendi."}
 	c.ServeJSON()

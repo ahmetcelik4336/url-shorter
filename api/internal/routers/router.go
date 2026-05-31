@@ -105,6 +105,11 @@ func Init(c *container.Container) {
 		LogService: c.LogService,
 	}, "post:UrlTrackAnalysis")
 
+	beego.Router("/v1/panel/LogDatatable", &controllers.AnalysisController{
+		Service:    c.AnalysisService,
+		LogService: c.LogService,
+	}, "post:LogDatatable")
+
 	// =========================
 	// JWT MIDDLEWARE
 	// =========================

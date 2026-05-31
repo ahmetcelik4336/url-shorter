@@ -1,12 +1,10 @@
 <div class="container">
     {{template "panel/menu.html" .}}
-
-   
-
     <div class="row my-3">
         {{range $key, $name := .data}}
         <div class="col-12 col-lg-3">
-            <div class="border p-2 rounded" style="display: flex;flex-direction: row;align-items: center;justify-content: space-around;">
+            <div class="border p-2 rounded"
+                style="display: flex;flex-direction: row;align-items: center;justify-content: space-around;">
                 <i class="fas fa-chart-line" style="font-size: 30px;"></i>
                 <div style="display: flex;flex-direction: column; align-items: center;">
                     <b>{{$name.Title}}</b>
@@ -17,7 +15,8 @@
         {{end}}
 
         <div class="col-12 col-lg-3">
-            <div class="border p-2 rounded" style="display: flex;flex-direction: row;align-items: center;justify-content: space-around;">
+            <div class="border p-2 rounded"
+                style="display: flex;flex-direction: row;align-items: center;justify-content: space-around;">
                 <i class="fas fa-chart-line" style="font-size: 30px;"></i>
                 <div style="display: flex;flex-direction: column; align-items: center;">
                     <b>Last Reading</b>
@@ -30,8 +29,7 @@
     <div id="collapse-area" class="mx-auto mb-4">
         <div class="my-2">
             <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
-                aria-controls="collapseExample"
-                class="active"
+                aria-controls="collapseExample" class="active"
                 style="display: flex;flex-direction: row;justify-content: flex-end;align-items: center;gap: 10px;">
                 <b>Filters</b>
 
@@ -65,7 +63,76 @@
         </div>
     </div>
 
-    <div id="chart"></div>
+    <div class="row">
+        <div class="col-12 col-lg-5">
+            <div id="chart"></div>
+        </div>
+        <div class="col-12 col-lg-7">
+            <div class="table-responsive">
+                <table id="myBackendTable" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Code</th>
+                            <th>Created</th>
+                            <th>Device</th>
+                            <th>Ip</th>
+                            <th>Type</th>
+                            <th>Reading</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.1/css/dataTables.dataTables.css">
+    <script src="https://cdn.datatables.net/2.3.1/js/dataTables.js"></script>
+    <link href="https://cdn.datatables.net/2.3.1/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <script src="https://cdn.datatables.net/2.3.1/js/dataTables.bootstrap4.js"></script>
+    <style>
+        .dt-length,
+        .dt-search {
+            margin-bottom: 20px;
+        }
+
+        div.dt-container .dt-paging .dt-paging-button:hover {
+            outline: none;
+            background: white !important;
+            border: 1px solid white !important;
+        }
+
+        .dt-layout-table {
+            margin-bottom: 20px !important;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $('#myBackendTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                order: [0, "desc"],
+                "ajax": {
+                    "url": '{{baseurl .slug "panel/log-datatable"}}',
+                    "type": "POST",
+                    "dataType": "json",
+                    "data": function (d) {
+                        d.startdate = '{{.start}}' // Örn: Bir select kutusundan değer alma
+                        d.enddate = '{{.end}}'  // Örn: Tarih filtresi
+                    }
+                },
+                "columns": [
+                    { "data": "id" },
+                    { "data": "code" },
+                    { "data": "created_at" },
+                    { "data": "device" },
+                    { "data": "ip" },
+                    { "data": "type" },
+                    { "data": "reading_at" }
+                ]
+            });
+        });
+    </script>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

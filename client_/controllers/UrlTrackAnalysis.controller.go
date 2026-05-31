@@ -51,3 +51,50 @@ func (c *UrlTrackAnalysis) Get() {
 	c.TplName = "panel/analysis/urltrack.html"
 
 }
+func (c *UrlTrackAnalysis) LogDatatable() {
+	draw, _ := c.GetInt("draw", 1)
+	start, _ := c.GetInt("start", 0)
+	length, _ := c.GetInt("length", 10)
+	searchVal := c.GetString("search[value]")
+
+	orderColumnIdx := c.GetString("order[0][column]")
+	orderDir := c.GetString("order[0][dir]") // "asc" veya "desc"
+	if orderDir == "" {
+		orderDir = "desc"
+	}
+
+	orderColumnName := c.GetString("columns[" + orderColumnIdx + "][data]")
+
+	startDateStr := c.GetString("startdate")
+	endDateStr := c.GetString("enddate")
+
+	// Go'nun parse edebilmesi için beklediğimiz format (Örn: 2026-05-31)
+	// Eğer frontend'den "31.05.2026" geliyorsa burayı "02.01.2006" yapmalısın!
+	const dateFormat = "2006-01-02"
+
+	var startDate, endDate time.Time
+
+	if startDateStr != "" {
+		startDate, _ = time.Parse(dateFormat, startDateStr)
+	}
+
+	if endDateStr != "" {
+		endDate, _ = time.Parse(dateFormat, endDateStr)
+	}
+
+	dtRequest := dto.DataTableRequest{
+		Draw:           draw,
+		Start:          start,
+		Length:         length,
+		SearchValue:    searchVal,
+		OrderColumnIdx: orderColumnName,
+		OrderDir:       orderDir,
+		StartDate:      startDate,
+		EndDate:        endDate,
+	}
+
+	result, _ := utils.SendRequest[*dto.DataTableResponse](dtRequest, "panel/LogDatatable", "POST", c.Ctx, "")
+	c.Data["json"] = result
+	c.ServeJSON()
+
+}

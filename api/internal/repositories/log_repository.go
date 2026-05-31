@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"shared/db"
 	dto "shared/models"
+	"strings"
 	"time"
 
 	"api/ent"
@@ -23,6 +24,8 @@ type LogRepository interface {
 	TotalReadingUrl(userID int) (*dto.UrlTrackAnalysisResponse, error)
 	GetLastReading(userID int) (*dto.GetLastReadingResponse, error)
 	GetUrlTrackAnalysis(userID int, request *dto.UsageAnalysisRequest) ([]*dto.UsageAnalysisResponse, error)
+	GetLogsCountByUserId(userID int) (int, error)
+	LogDatatable(start, length, userId int, searchval, orderColumnName, orderDir string, startDate, endDate time.Time) ([]dto.DataTableRowsResponse, int64, error)
 }
 
 type logRepository struct {
@@ -35,6 +38,87 @@ func NewLogRepository(db *ent.Client, dialect string) LogRepository {
 		db:      db,
 		dailect: dialect,
 	}
+}
+func (r *logRepository) GetLogsCountByUserId(userID int) (int, error) {
+	return r.db.Logs.
+		Query().
+		Where(logs.HasUserWith(user.IDEQ(userID))).
+		Count(context.Background())
+}
+
+func (r *logRepository) LogDatatable(start, length, userId int, searchval, orderColumnName, orderDir string, startDate, endDate time.Time) ([]dto.DataTableRowsResponse, int64, error) {
+	query := r.db.Logs.
+		Query().
+		Where(logs.HasUserWith(user.IDEQ(userId))).
+		WithLog()
+
+	if searchval != "" {
+		query = query.Where(
+			logs.Or(
+				logs.HasLogWith(url.ShortCodeContainsFold(searchval)),
+				logs.HasLogWith(url.LongURLContainsFold(searchval)),
+			),
+		)
+	}
+
+	query = query.Where(logs.CreatedAtGTE(startDate))
+	query = query.Where(logs.CreatedAtLTE(endDate))
+
+	filteredCount, err := query.Count(context.Background())
+	if err != nil {
+		return nil, 0, fmt.Errorf("filtrelenmiş count alınamadı: %w", err)
+	}
+
+	isDesc := strings.ToLower(orderDir) == "desc"
+
+	switch orderColumnName {
+	case "created_at":
+		if isDesc {
+			// sql.OrderDesc kullanarak ilişkili tablonun alanını belirtiyoruz
+			query = query.Order(logs.ByLogField(url.FieldCreatedAt, sql.OrderDesc()))
+		} else {
+			query = query.Order(logs.ByLogField(url.FieldCreatedAt, sql.OrderAsc()))
+		}
+	case "id":
+		if isDesc {
+			query = query.Order(ent.Desc(logs.FieldID))
+		} else {
+			query = query.Order(ent.Asc(logs.FieldID))
+		}
+	case "reading_at":
+		if isDesc {
+			query = query.Order(ent.Desc(logs.FieldID))
+		} else {
+			query = query.Order(ent.Asc(logs.FieldID))
+		}
+	default:
+		query = query.Order(ent.Desc(logs.FieldCreatedAt))
+	}
+
+	if length >= 0 {
+		query = query.Limit(length).Offset(start)
+	}
+
+	data, err := query.All(context.Background())
+	if err != nil {
+		return nil, 0, fmt.Errorf("veriler çekilemedi: %w", err)
+	}
+
+	var rows []dto.DataTableRowsResponse
+
+	for _, u := range data {
+		row := dto.DataTableRowsResponse{
+			Id:         u.ID,
+			Code:       u.Edges.Log.ShortCode,
+			Created_at: u.Edges.Log.CreatedAt.Format("2006-01-02"),
+			Device:     u.Device,
+			Ip:         u.IP,
+			Type:       u.Type,
+			Reading_at: u.CreatedAt.Format("2006-01-02"),
+		}
+		rows = append(rows, row)
+	}
+	return rows, int64(filteredCount), nil
 }
 func (r *logRepository) GetPerDayClick() (float64, error) {
 	var v []struct {

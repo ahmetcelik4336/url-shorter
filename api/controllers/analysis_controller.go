@@ -113,3 +113,19 @@ func (c *AnalysisController) UrlTrackAnalysis() {
 	c.Data["json"] = totalRead
 	c.ServeJSON()
 }
+
+func (c *AnalysisController) LogDatatable() {
+
+	var req dto.DataTableRequest
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
+
+	}
+	userid := c.Ctx.Input.GetData("userID").(int)
+	response, err := c.LogService.LogDatatable(req.Draw, req.Start, req.Length, userid, req.SearchValue, req.OrderColumnIdx, req.OrderDir, req.StartDate, req.EndDate)
+	if err != nil {
+		c.CustomAbort(401, err.Error())
+		return
+	}
+	c.Data["json"] = response
+	c.ServeJSON()
+}

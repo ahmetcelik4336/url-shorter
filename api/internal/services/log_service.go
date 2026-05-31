@@ -5,6 +5,7 @@ import (
 	"api/internal/repositories"
 	"errors"
 	dto "shared/models"
+	"time"
 )
 
 type LogService interface {
@@ -12,6 +13,7 @@ type LogService interface {
 	GetPerDayClick() (*dto.ResponseClicked, error)
 	TotalReading(userId int) (*dto.UrlTrackAnalysisResponseBatch, error)
 	GetUrlTrackAnalysis(userId int, request *dto.UsageAnalysisRequest) ([]*dto.UsageAnalysisResponse, error)
+	LogDatatable(draw, start, length, userId int, searchval, orderColumnName, orderDir string, startDate, endDate time.Time) (*dto.DataTableResponse, error)
 }
 
 type logService struct {
@@ -61,4 +63,19 @@ func (s *logService) TotalReading(userId int) (*dto.UrlTrackAnalysisResponseBatc
 func (s *logService) GetUrlTrackAnalysis(userId int, request *dto.UsageAnalysisRequest) ([]*dto.UsageAnalysisResponse, error) {
 	GetUrlTrackAnalysis, _ := s.repo.GetUrlTrackAnalysis(userId, request)
 	return GetUrlTrackAnalysis, nil
+}
+
+func (s *logService) LogDatatable(draw, start, length, userId int, searchval, orderColumnName, orderDir string, startDate, endDate time.Time) (*dto.DataTableResponse, error) {
+
+	data, totalRecords, err := s.repo.LogDatatable(start, length, userId, searchval, orderColumnName, orderDir, startDate, endDate)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	return &dto.DataTableResponse{
+		Draw:            draw,
+		RecordsTotal:    int64(totalRecords),
+		RecordsFiltered: totalRecords,
+		Data:            data,
+	}, nil
 }
