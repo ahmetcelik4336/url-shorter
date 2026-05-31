@@ -44,7 +44,7 @@ func (c *RedirectController) Redirect() {
 		}
 		url, err1 := c.Service.GetById(response.Data.Id)
 		userid := 0
-		if err1 == nil && url != nil {
+		if err1 == nil && url != nil && url.Edges.User != nil {
 			userid = url.Edges.User.ID
 		}
 		_, err := c.LogService.Create(response.Data.Id, userid, req)
