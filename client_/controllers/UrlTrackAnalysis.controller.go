@@ -65,12 +65,12 @@ func (c *UrlTrackAnalysis) LogDatatable() {
 
 	orderColumnName := c.GetString("columns[" + orderColumnIdx + "][data]")
 
-	startDateStr := c.GetString("startdate")
-	endDateStr := c.GetString("enddate")
+	startDateStr := c.GetString("startdate") + "00:00:00"
+	endDateStr := c.GetString("enddate") + "23:59:59"
 
 	// Go'nun parse edebilmesi için beklediğimiz format (Örn: 2026-05-31)
 	// Eğer frontend'den "31.05.2026" geliyorsa burayı "02.01.2006" yapmalısın!
-	const dateFormat = "2006-01-02"
+	const dateFormat = "2006-01-02 15:04:05"
 
 	var startDate, endDate time.Time
 

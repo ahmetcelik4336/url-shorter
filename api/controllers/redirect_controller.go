@@ -58,7 +58,6 @@ func (c *RedirectController) Redirect() {
 		}
 
 		c.ServeJSON()
-		//c.Ctx.Redirect(http.StatusFound, response.Data.LongUrl)
 		return
 	}
 

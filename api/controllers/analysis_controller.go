@@ -64,8 +64,6 @@ func (c *AnalysisController) GetURLStats() {
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
 
 	}
-	//fmt.Println(c.Ctx.Input.GetData("userID").(int))
-
 	userID := c.Ctx.Input.GetData("userID").(int)
 	token, err := c.Service.GetURLStats(userID, req)
 	if err != nil {
