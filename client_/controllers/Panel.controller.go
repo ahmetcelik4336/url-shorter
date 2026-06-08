@@ -28,6 +28,38 @@ func (c *PanelController) Panel() {
 	token := c.Ctx.Input.GetData("token")
 	tokenn := token.(string)
 	req := dto.UsageAnalysisRequest{}
+
+	// 1. Formdan gelen string tarih verilerini manuel olarak alıyoruz
+	// HTML input type="date" için format genelde "2006-01-02" olur.
+	// Eğer saat de varsa (datetime-local) format "2006-01-02T15:04" olabilir.
+	const formDateFormat = "2006-01-02 15:04:05"
+
+	startStr := c.GetString("start") + " 00:00:00"
+	endStr := c.GetString("end") + " 23:59:59"
+
+	// 2. String değerleri time.Time nesnesine çevirip req struct'ına atıyoruz
+	if startStr != "" {
+		parsedStart, err := time.Parse(formDateFormat, startStr)
+		if err != nil {
+			c.Ctx.Output.SetStatus(400)
+			c.Data["json"] = map[string]string{"error": "Başlangıç tarihi geçersiz formatta"}
+			c.ServeJSON()
+			return
+		}
+		req.Start = parsedStart
+	}
+
+	if endStr != "" {
+		parsedEnd, err := time.Parse(formDateFormat, endStr)
+		if err != nil {
+			c.Ctx.Output.SetStatus(400)
+			c.Data["json"] = map[string]string{"error": "Bitiş tarihi geçersiz formatta"}
+			c.ServeJSON()
+			return
+		}
+		req.End = parsedEnd
+	}
+
 	if err := c.ParseForm(&req); err != nil {
 		c.Ctx.Output.SetStatus(400)
 		c.Data["json"] = map[string]string{"error": "Geçersiz tarih formatı"}
@@ -39,10 +71,10 @@ func (c *PanelController) Panel() {
 	jsons, _ := json.Marshal(usage)
 	c.Data["usage"] = string(jsons)
 	if !req.Start.IsZero() {
-		c.Data["start"] = req.Start.Format("2006-01-02 15:04")
+		c.Data["start"] = req.Start.Format("2006-01-02")
 	}
 	if !req.End.IsZero() {
-		c.Data["end"] = req.End.Format("2006-01-02 15:04")
+		c.Data["end"] = req.End.Format("2006-01-02")
 	}
 
 	c.Data["headerActive"] = "active"
