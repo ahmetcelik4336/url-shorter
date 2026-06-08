@@ -28,17 +28,9 @@ func (c *PanelController) Panel() {
 	token := c.Ctx.Input.GetData("token")
 	tokenn := token.(string)
 	req := dto.UsageAnalysisRequest{}
-
-	// 1. Formdan gelen string tarih verilerini manuel olarak alıyoruz
-	// HTML input type="date" için format genelde "2006-01-02" olur.
-	// Eğer saat de varsa (datetime-local) format "2006-01-02T15:04" olabilir.
 	const formDateFormat = "2006-01-02 15:04:05"
-
-	startStr := c.GetString("start") + " 00:00:00"
-	endStr := c.GetString("end") + " 23:59:59"
-
-	// 2. String değerleri time.Time nesnesine çevirip req struct'ına atıyoruz
-	if startStr != "" {
+	if c.GetString("start") != "" {
+		startStr := c.GetString("start") + " 00:00:00"
 		parsedStart, err := time.Parse(formDateFormat, startStr)
 		if err != nil {
 			c.Ctx.Output.SetStatus(400)
@@ -49,7 +41,8 @@ func (c *PanelController) Panel() {
 		req.Start = parsedStart
 	}
 
-	if endStr != "" {
+	if c.GetString("end") != "" {
+		endStr := c.GetString("end") + " 23:59:59"
 		parsedEnd, err := time.Parse(formDateFormat, endStr)
 		if err != nil {
 			c.Ctx.Output.SetStatus(400)
