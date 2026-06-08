@@ -5,6 +5,7 @@
         <div class="my-2">
             <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
                 aria-controls="collapseExample"
+                class="active"
                 style="display: flex;flex-direction: row;justify-content: flex-end;align-items: center;gap: 10px;">
                 <b>Filters</b>
 
@@ -14,18 +15,18 @@
             </a>
 
         </div>
-        <div class="collapse" id="collapseExample">
+        <div class="collapse active show" id="collapseExample">
             <form action="" method="get">
                 <div class="row">
 
                     <div class="col-12 col-lg-5">
                         <label for="" class="m-0">Start Date</label>
-                        <input type="date" name="start" value="{{.start}}" class="form-control form-control-sm">
+                        <input type="datetime-local" name="start" value="{{.start}}" class="form-control form-control-sm">
                     </div>
 
                     <div class="col-12 col-lg-5">
                         <label for="" class="m-0">End Date</label>
-                        <input type="date" name="end" value="{{.end}}" class="form-control form-control-sm">
+                        <input type="datetime-local" name="end" value="{{.end}}" class="form-control form-control-sm">
                     </div>
 
                     <div class="col-12 col-lg-2 d-flex align-items-end">

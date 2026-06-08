@@ -39,10 +39,10 @@ func (c *PanelController) Panel() {
 	jsons, _ := json.Marshal(usage)
 	c.Data["usage"] = string(jsons)
 	if !req.Start.IsZero() {
-		c.Data["start"] = req.Start.Format("2006-01-02")
+		c.Data["start"] = req.Start.Format("2006-01-02 15:04")
 	}
 	if !req.End.IsZero() {
-		c.Data["end"] = req.End.Format("2006-01-02")
+		c.Data["end"] = req.End.Format("2006-01-02 15:04")
 	}
 
 	c.Data["headerActive"] = "active"
